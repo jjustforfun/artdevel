@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const articles = await getCollection('blog', ({ data }) => data.locale === 'en' && !data.draft);
+
+const sortedArticles = articles.sort(
+  (a, b) => new Date(b.data.datePublished).getTime() - new Date(a.data.datePublished).getTime()
+);
+---
+
+<BaseLayout
+  title="Blog / Journal"
+  description="Articles, technical notes, and insights on web eco-design, performance, and accessibility by Jean."
+>
+  <div class="container">
+    <header class="page-header">
+      <h1 class="page-title">Blog / Journal</h1>
+      <p class="subtitle">
+        Thoughts, technical guides, and journal entries on eco-designed web development and digital craftsmanship.
+      </p>
+    </header>
+
+    {sortedArticles.length > 0 ? (
+      <div class="articles-list">
+        {sortedArticles.map((article, index) => (
+          <div class="grid-reveal" data-reveal style={`--reveal-delay: ${index * 70}ms`}>
+            <ArticleCard article={article} />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="empty-state">No published articles at the moment.</p>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+    max-width: 720px;
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .subtitle {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  .articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    max-width: 800px;
+    margin-top: var(--space-4);
+  }
+
+  .empty-state {
+    color: var(--color-text-muted);
+    font-style: italic;
+    padding-top: var(--space-8);
+  }
+</style>

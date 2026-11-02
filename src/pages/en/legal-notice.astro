@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { siteConfig } from '../../data/site';
+---
+
+<BaseLayout
+  title={`Legal Notice · ${siteConfig.name}`}
+  description="Legal notice, privacy policy and information regarding the JEAN DUPONT website."
+>
+  <main class="legal-page">
+    <div class="container container-sm">
+      <Breadcrumb items={[
+        { label: 'Home', href: '/en/' },
+        { label: 'Legal Notice' },
+      ]} />
+
+      <h1 class="legal-title">Legal Notice</h1>
+
+      <div class="legal-content">
+        <section>
+          <h2>1. Publisher</h2>
+          <p>
+            The website <strong>{siteConfig.name}</strong> ({siteConfig.url}) is published by:<br />
+            <strong>{siteConfig.author}</strong><br />
+            Status: Sole Proprietor / Independent Developer<br />
+            Location: {siteConfig.location.region}, {siteConfig.location.country}<br />
+            Email: <a href={`mailto:${siteConfig.email}`} class="link-underline">{siteConfig.email}</a>
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Hosting</h2>
+          <p>
+            This website is statically and securely hosted by:<br />
+            <strong>GitHub Pages / Vercel Inc.</strong><br />
+            Global distributed CDN infrastructure with Let's Encrypt SSL/TLS certificate.
+          </p>
+        </section>
+
+        <section>
+          <h2>3. Intellectual Property</h2>
+          <p>
+            All content (texts, brand elements, demo source codes unless otherwise specified) on this website is protected by international copyright laws. All reproduction rights reserved.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. Privacy & Cookies</h2>
+          <p>
+            This site strictly respects user privacy and complies with GDPR regulations:
+          </p>
+          <ul>
+            <li><strong>No advertising trackers</strong> or third-party cookies are used.</li>
+            <li>No cross-site tracking.</li>
+            <li>Information sent via email links is strictly used to answer professional inquiries and is never shared with third parties.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>5. Green IT & Accessibility</h2>
+          <p>
+            Built with sustainable web design principles and accessibility standards (WCAG 2.1 AA): semantic HTML, lightweight CSS without superfluous JavaScript overhead, strong contrast ratios, and keyboard accessibility.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .legal-page {
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-16);
+  }
+
+  .container-sm {
+    max-width: 760px;
+  }
+
+  .legal-title {
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+    margin-bottom: var(--space-8);
+    color: var(--text);
+  }
+
+  .legal-content section {
+    margin-bottom: var(--space-8);
+  }
+
+  .legal-content h2 {
+    font-size: var(--font-size-h2);
+    margin-bottom: var(--space-3);
+    color: var(--text);
+  }
+
+  .legal-content p,
+  .legal-content ul {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: var(--space-4);
+  }
+
+  .legal-content ul {
+    padding-left: var(--space-6);
+  }
+
+  .legal-content li {
+    margin-bottom: var(--space-2);
+  }
+
+  .legal-content strong {
+    color: var(--text);
+  }
+</style>

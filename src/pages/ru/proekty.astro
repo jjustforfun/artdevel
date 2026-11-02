@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import TestimonialCard from '../../components/TestimonialCard.astro';
+import { getCollection } from 'astro:content';
+
+const testimonials = [
+  {
+    name: 'Claire',
+    role: 'Управляющая магазином',
+    quote: 'Сопровождение от начала до конца: сайт быстрый, элегантный и сразу увеличил количество запросов на запись.',
+    photo: '/avatars/claire.jpg',
+  },
+  {
+    name: 'Thomas',
+    role: 'Ресторатор',
+    quote: 'Сдача в срок, чёткое общение и результат, оправдывающий ожидания. Настоятельно рекомендую.',
+    photo: '/avatars/thomas.jpg',
+  },
+  {
+    name: 'Sophie',
+    role: 'Дизайнер интерьеров',
+    quote: 'Жан смог перенести нашу атмосферу в доступный и аккуратный сайт. Работа выполнена чисто, точно, профессионально.',
+    photo: '/avatars/sophie.jpg',
+  },
+];
+
+const projects = await getCollection('projects', ({ data }) => data.locale === 'ru');
+
+const sortedProjects = projects.sort((a, b) => {
+  if (a.data.featured && !b.data.featured) return -1;
+  if (!a.data.featured && b.data.featured) return 1;
+  return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+});
+---
+
+<BaseLayout title="Проекты" description="Избранные веб-проекты, индивидуальные приложения и цифровые инструменты.">
+  <div class="container">
+    <header class="page-header">
+      <h1 class="page-title">Проекты</h1>
+      <p class="subtitle">Подборка выполненных работ, цифровых утилит и экологичных веб-сервисов.</p>
+    </header>
+
+    {sortedProjects.length > 0 ? (
+      <div class="projects-grid">
+        {sortedProjects.map((project, index) => (
+          <div class="grid-reveal" data-reveal style={`--reveal-delay: ${index * 70}ms`}>
+            <ProjectCard project={project} />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="empty-state">В настоящее время нет доступных проектов.</p>
+    )}
+
+    <section class="testimonials-section" data-reveal>
+      <SectionHeading
+        eyebrow="Отзывы клиентов"
+        title="Они доверились мне"
+        subtitle="Что говорят те, кто доверил мне свой проект."
+      />
+      <div class="testimonials-grid">
+        {testimonials.map((t, index) => (
+          <div class="grid-reveal" data-reveal style={`--reveal-delay: ${index * 80}ms`}>
+            <TestimonialCard name={t.name} role={t.role} quote={t.quote} photo={t.photo} ratingLabel={`Оценка: ${t.rating ?? 5} из 5`} />
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .subtitle {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-8);
+    margin-top: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .empty-state {
+    color: var(--color-text-muted);
+    font-style: italic;
+    padding-top: var(--space-8);
+  }
+
+  .testimonials-section {
+    padding-top: var(--space-24);
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .testimonials-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

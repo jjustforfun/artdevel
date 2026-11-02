@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "locale": {
+      "type": "string",
+      "enum": [
+        "fr",
+        "en",
+        "ru"
+      ]
+    },
+    "translationKey": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "experiment",
+        "vibecoding",
+        "mini-app",
+        "component",
+        "prototype",
+        "challenge",
+        "lab-note"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "stack": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "coverImage": {
+      "type": "string"
+    },
+    "gallery": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "demoUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "repoUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "youtubeUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "slug",
+    "locale",
+    "translationKey",
+    "summary",
+    "date",
+    "type"
+  ]
+}

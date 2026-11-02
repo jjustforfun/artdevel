@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { siteConfig } from '../../data/site';
+---
+
+<BaseLayout
+  title={`Правовая информация · ${siteConfig.name}`}
+  description="Правовая информация, политика конфиденциальности и условия использования сайта JEAN DUPONT."
+>
+  <main class="legal-page">
+    <div class="container container-sm">
+      <Breadcrumb items={[
+        { label: 'Главная', href: '/ru/' },
+        { label: 'Правовая информация' },
+      ]} />
+
+      <h1 class="legal-title">Правовая информация</h1>
+
+      <div class="legal-content">
+        <section>
+          <h2>1. Издатель сайта</h2>
+          <p>
+            Сайт <strong>{siteConfig.name}</strong> ({siteConfig.url}) администрируется:<br />
+            <strong>{siteConfig.author}</strong><br />
+            Статус: Индивидуальный предприниматель / Независимый разработчик<br />
+            Регион: {siteConfig.location.region}, {siteConfig.location.country}<br />
+            Email: <a href={`mailto:${siteConfig.email}`} class="link-underline">{siteConfig.email}</a>
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Хостинг</h2>
+          <p>
+            Сайт размещен на статической защищенной инфраструктуре:<br />
+            <strong>GitHub Pages / Vercel Inc.</strong><br />
+            Глобальная сеть CDN с поддержкой SSL/TLS сертификатов Let's Encrypt.
+          </p>
+        </section>
+
+        <section>
+          <h2>3. Интеллектуальная собственность</h2>
+          <p>
+            Все материалы сайта (тексты, графические элементы, архитектура и демонстрационные примеры кода) защищены международным законодательством об авторском праве. Все права сохранены.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. Конфиденциальность и файлы cookie</h2>
+          <p>
+            Сайт строго соблюдает конфиденциальность пользователей и требования регламентов о защите данных (GDPR):
+          </p>
+          <ul>
+            <li><strong>Никаких рекламных трекеров</strong> и сторонних файлов cookie.</li>
+            <li>Отсутствие межсайтового отслеживания.</li>
+            <li>Данные, отправляемые по электронной почте, используются исключительно для деловой переписки и не передаются третьим лицам.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>5. Эко-дизайн и доступность</h2>
+          <p>
+            Сайт разработан в соответствии с принципами экологической ответственности и стандартов веб-доступности (WCAG 2.1 AA): семантический HTML, легкий CSS без лишнего JavaScript, высокий контраст и полная навигация с клавиатуры.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .legal-page {
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-16);
+  }
+
+  .container-sm {
+    max-width: 760px;
+  }
+
+  .legal-title {
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+    margin-bottom: var(--space-8);
+    color: var(--text);
+  }
+
+  .legal-content section {
+    margin-bottom: var(--space-8);
+  }
+
+  .legal-content h2 {
+    font-size: var(--font-size-h2);
+    margin-bottom: var(--space-3);
+    color: var(--text);
+  }
+
+  .legal-content p,
+  .legal-content ul {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: var(--space-4);
+  }
+
+  .legal-content ul {
+    padding-left: var(--space-6);
+  }
+
+  .legal-content li {
+    margin-bottom: var(--space-2);
+  }
+
+  .legal-content strong {
+    color: var(--text);
+  }
+</style>

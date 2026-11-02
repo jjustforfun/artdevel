@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "dateStart": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "dateEnd": {
+      "type": "string"
+    },
+    "current": {
+      "type": "boolean"
+    },
+    "location": {
+      "type": "string"
+    },
+    "details": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "logo": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string",
+      "format": "uri"
+    },
+    "youtubeUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "role",
+    "company",
+    "dateStart",
+    "summary"
+  ]
+}

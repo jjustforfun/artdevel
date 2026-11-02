@@ -1,0 +1,220 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Timeline from '../../components/Timeline.astro';
+import CTAButton from '../../components/CTAButton.astro';
+import FAQ from '../../components/FAQ.astro';
+import { siteConfig } from '../../data/site';
+import { generatePersonSchema, generateFAQSchema } from '../../lib/seo';
+import { getCollection } from 'astro:content';
+
+const rawExperiences = await getCollection('experience');
+const experiences = rawExperiences
+  .sort((a, b) => {
+    if (a.data.current && !b.data.current) return -1;
+    if (!a.data.current && b.data.current) return 1;
+    return parseInt(b.data.dateStart) - parseInt(a.data.dateStart);
+  })
+  .map((e) => e.data);
+
+const faqItems = [
+  {
+    question: "Where are you based and what areas do you cover?",
+    answer: "I am based in Lyon, in the Auvergne-Rhône-Alpes region of France. I work locally in Lyon, Villeurbanne, Bron, Vénissieux, Caluire-et-Cuire, and Écully, as well as remotely for international projects."
+  },
+  {
+    question: "What is an eco-designed website?",
+    answer: "An eco-designed website is optimized to use minimal computational power and energy. This translates to lean code, fast page loads, no heavy trackers, and a significantly reduced carbon footprint."
+  },
+  {
+    question: "What technologies do you build with?",
+    answer: "I primarily use Astro, TypeScript, semantic HTML5, and Vanilla CSS. This stack guarantees top-tier performance, security, and low maintenance overhead."
+  },
+  {
+    question: "Are your websites accessible to users with disabilities?",
+    answer: "Yes, all my web builds comply with WCAG 2.2 AA standards, ensuring full keyboard navigation, verified color contrast, and proper semantic markup."
+  }
+];
+
+const personSchema = generatePersonSchema('en');
+const faqSchema = generateFAQSchema(faqItems);
+---
+
+<BaseLayout
+  title="About"
+  description="Jean is an independent web developer based in Lyon (France). Discover his background, eco-design philosophy, and FAQ."
+  jsonLd={[personSchema, faqSchema]}
+>
+  <div class="container">
+    <header class="page-header">
+      <div class="expertise-badge">A direct collaboration</div>
+      <h1 class="page-title">A website built around your business</h1>
+      <p class="subtitle">
+         Based in Lyon (Auvergne-Rhône-Alpes, France), Jean creates websites that make businesses clearer, more credible and easier to contact.
+      </p>
+    </header>
+
+    <div class="profile-grid">
+      <section class="expertise-section">
+        <h2>What I bring to a project</h2>
+        <div class="expertise-cards">
+          <div class="exp-card">
+            <h3>A presence people trust</h3>
+            <p>A clear structure for presenting your business, services, and reasons to choose you.</p>
+          </div>
+          <div class="exp-card">
+            <h3>A comfortable experience</h3>
+            <p>An enjoyable website on desktop, tablet and mobile, so no visitor is left behind.</p>
+          </div>
+          <div class="exp-card">
+            <h3>A strong foundation</h3>
+            <p>A fast, maintainable website designed to evolve with your business.</p>
+          </div>
+          <div class="exp-card">
+            <h3>Better visibility</h3>
+            <p>Content and organization that help future customers find you on Google and AI assistants.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bio-section">
+      <div class="bio-content">
+        <h2>Philosophy & Craft</h2>
+        <p>
+           I approach web development with care: every choice should make your site clearer, more useful and easier to maintain.
+        </p>
+        <p>
+           Based in Lyon, France, I work directly with professionals in the Auvergne-Rhône-Alpes region and remotely across France.
+        </p>
+
+        <div class="cta-wrapper">
+          <CTAButton href={`mailto:${siteConfig.email}`} variant="primary">
+            Contact via email
+          </CTAButton>
+          <CTAButton href={siteConfig.socials.github} variant="outline" external>
+            View GitHub
+          </CTAButton>
+        </div>
+      </div>
+      </section>
+    </div>
+
+    <section class="experience-section">
+      <h2>Background & Experience</h2>
+      <Timeline items={experiences} locale="en" />
+    </section>
+
+    <FAQ items={faqItems} title="Frequently Asked Questions (FAQ)" />
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+    max-width: 800px;
+  }
+
+  .page-title {
+    font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
+    margin-bottom: var(--space-4);
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    font-size: var(--text-xl);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  .profile-grid {
+    display: grid;
+    gap: var(--space-16);
+    margin-bottom: var(--space-24);
+  }
+
+  @media (min-width: 1024px) {
+    .profile-grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .expertise-section h2, .bio-section h2 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-8);
+    position: relative;
+    padding-bottom: var(--space-2);
+  }
+
+  .expertise-section h2::after, .bio-section h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--color-accent);
+  }
+
+  .expertise-cards {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .exp-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: var(--space-6);
+    border-radius: var(--radius-md);
+  }
+
+  .exp-card h3 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+    color: var(--color-accent);
+  }
+
+  .exp-card p {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+  }
+
+  .expertise-badge {
+    display: inline-block;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-4);
+  }
+
+  .bio-content {
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .bio-content p {
+    margin-bottom: var(--space-4);
+  }
+
+  .cta-wrapper {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+    flex-wrap: wrap;
+  }
+
+  .experience-section {
+    padding-top: var(--space-16);
+    border-top: 1px solid var(--color-border);
+    margin-bottom: var(--space-24);
+  }
+
+  .experience-section h2 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-12);
+  }
+</style>

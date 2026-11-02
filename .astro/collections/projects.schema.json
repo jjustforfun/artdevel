@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "locale": {
+      "type": "string",
+      "enum": [
+        "fr",
+        "en",
+        "ru"
+      ]
+    },
+    "translationKey": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "stack": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "coverImage": {
+      "type": "string"
+    },
+    "gallery": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "demoUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "repoUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "youtubeUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "clientName": {
+      "type": "string"
+    },
+    "featured": {
+      "type": "boolean"
+    },
+    "seoTitle": {
+      "type": "string"
+    },
+    "seoDescription": {
+      "type": "string"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "slug",
+    "locale",
+    "translationKey",
+    "summary",
+    "date",
+    "tags",
+    "stack",
+    "status"
+  ]
+}
