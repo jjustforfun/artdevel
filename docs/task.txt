@@ -1,0 +1,36 @@
+CONTEXT
+Read brief.yaml and content-model.yaml before doing anything.
+Do NOT re-explain them, apply them.
+
+CURRENT TASK
+Bootstrap the Astro project with the following steps:
+
+1. Init Astro + TypeScript, strict mode.
+2. Configure native i18n:
+   - default: fr (no prefix)
+   - locales: en, ru (with prefix)
+3. Create folder structure per content-model.yaml.
+4. Create empty content collections with Zod schemas matching content-model.yaml.
+5. Create base layout with:
+   - header (nav + language switch + theme toggle)
+   - footer
+   - <slot />
+6. Create all 5 pages per locale (empty but routed).
+7. Add sitemap integration + robots.txt.
+8. Add hreflang + canonical helper.
+9. Add tokens.css with light/dark theme variables (warm ivory / soft charcoal).
+10. Add README with:
+    - how to add a project
+    - how to add an article
+    - how to change global info
+    - how to add a language
+
+CONSTRAINTS
+- keep code simple and readable
+- comment non-obvious choices
+- no over-engineering
+- no extra dependencies unless justified
+- respect acceptance criteria in brief.yaml
+
+DELIVERABLE
+Working scaffold, buildable, deployable, with empty but valid pages in FR/EN/RU.

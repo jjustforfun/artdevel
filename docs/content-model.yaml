@@ -1,0 +1,52 @@
+storage:
+  long_content: markdown (mdx)
+  structured_data: yaml or json
+  global_data: typescript in src/data/
+
+folders:
+  content: src/content/
+  data: src/data/
+  components: src/components/
+  layouts: src/layouts/
+  pages: src/pages/
+  styles: src/styles/
+  utils: src/lib/
+
+collections:
+
+  projects:
+    format: md
+    required: [title, slug, locale, translationKey, summary, date, tags, stack, status]
+    optional: [description, coverImage, gallery, demoUrl, repoUrl, youtubeUrl, clientName, featured, seoTitle, seoDescription]
+    rules:
+      - if youtubeUrl missing -> hide video block
+      - if coverImage missing -> show text-only card
+      - if demoUrl/repoUrl missing -> hide buttons
+
+  experience:
+    format: yaml or md
+    required: [role, company, dateStart, summary]
+    optional: [dateEnd, current, location, details, skills, logo, link, youtubeUrl]
+
+  playground:
+    format: md
+    required: [title, slug, locale, translationKey, summary, date, type]
+    optional: [description, stack, coverImage, gallery, demoUrl, repoUrl, youtubeUrl]
+    type_values: [experiment, component, prototype, challenge, lab-note]
+
+  blog:
+    format: md
+    required: [title, slug, locale, translationKey, excerpt, datePublished, category]
+    optional: [dateUpdated, tags, coverImage, youtubeUrl, draft, readingTime, seoTitle, seoDescription]
+
+global_data_files:
+  - src/data/site.ts        # name, tagline, email, socials, location
+  - src/data/nav.ts         # navigation per locale
+  - src/data/i18n/fr.json
+  - src/data/i18n/en.json
+  - src/data/i18n/ru.json
+  - src/styles/tokens.css   # colors, spacing, fonts
+
+optional_media_rule: >
+  ALL optional media/link fields must render conditionally.
+  Missing field must never break layout, never show empty box, never throw.

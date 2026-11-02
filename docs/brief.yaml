@@ -1,0 +1,133 @@
+project:
+  name: portfolio
+  type: personal-portfolio
+  stack: astro
+  language: typescript
+  rendering: static
+  client_js: minimal
+  target_launch: 2026-09
+
+goals:
+  - maintainable by beginner
+  - low client-side JS
+  - fast, accessible, responsive
+  - multilingual FR/EN/RU
+  - SEO + local SEO France
+  - easy content editing via files
+  - no CMS, no heavy deps
+
+locales:
+  default: fr
+  supported: [fr, en, ru]
+  url_strategy: prefix_except_default
+  routing: astro_native_i18n
+
+pages:
+  fr:
+    home: /
+    about: /a-propos/
+    projects: /projets/
+    playground: /atelier/
+    blog: /blog/
+  en:
+    home: /en/
+    about: /en/about/
+    projects: /en/projects/
+    playground: /en/playground/
+    blog: /en/blog/
+  ru:
+    home: /ru/
+    about: /ru/obo-mne/
+    projects: /ru/proekty/
+    playground: /ru/masterskaya/
+    blog: /ru/blog/
+
+nav_labels:
+  fr: [Accueil, À propos, Projets, Atelier, Blog / Journal]
+  en: [Home, About, Projects, Playground, Blog / Journal]
+  ru: [Главная, Обо мне, Проекты, Мастерская, Блог / Журнал]
+
+theme:
+  modes: [light, dark]
+  default: system
+  persist: true
+  light:
+    background: warm ivory / milk / safari white
+    surface: soft cream
+    text: deep warm brown-gray
+    text_muted: taupe
+    border: beige stone
+    accent: muted blue or smoky teal
+  dark:
+    background: soft charcoal (not pure black)
+    surface: warm dark graphite
+    text: sand beige (not pure white)
+    text_muted: warm gray-beige
+    border: cool brown subtle
+    accent: brume blue or dusty amber
+
+design:
+  mood: editorial, warm, minimal, premium-quiet
+  avoid: [neon, glassmorphism heavy, big gradients, startup cliches, pure black, pure white]
+  spacing: generous
+  typography: strong hierarchy, high readability
+  motion: subtle only (fade, soft hover)
+
+seo:
+  basics:
+    - unique title per page
+    - unique meta description per page
+    - canonical urls
+    - sitemap auto
+    - robots.txt
+    - open graph tags
+    - semantic HTML
+  i18n:
+    - hreflang on all localized pages
+    - self-referencing hreflang
+    - x-default -> FR home
+  local:
+    regions: [France, Auvergne-Rhône-Alpes]
+    cities: [Lyon, Villeurbanne, Bron, Venissieux, Caluire-et-Cuire, Ecully]
+    rules:
+      - mention naturally in home/about/footer
+      - no duplicate city pages
+      - create local page ONLY if unique real value
+  structured_data:
+    format: json-ld
+    types:
+      - Person (about page)
+      - BlogPosting (articles)
+      - LocalBusiness (only if real business info visible)
+
+performance:
+  targets:
+    - LCP good
+    - INP good
+    - CLS good
+  rules:
+    - optimized images via astro:assets
+    - explicit image dimensions
+    - alt required
+    - lazy load below fold
+    - no heavy frameworks client-side
+
+accessibility:
+  level: WCAG 2.2 AA
+  rules:
+    - semantic HTML
+    - visible focus
+    - keyboard nav complete
+    - alt on images
+    - contrast checked in both themes
+    - no info by color only
+
+acceptance:
+  - 3 locales working, FR default no prefix
+  - all 5 pages exist per locale
+  - optional fields never break UI
+  - light/dark themes clean and readable
+  - content editable via single files
+  - hreflang + canonical + sitemap valid
+  - responsive mobile-first
+  - documented in README
