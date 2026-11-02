@@ -1,0 +1,16 @@
+role: "Développeur Front-End"
+company: "Studio Numérique"
+dateStart: "2022"
+dateEnd: "2024"
+location: "Lyon, France"
+summary: "Création d'interfaces utilisateur modernes et réactives pour des projets clients variés dans le secteur du e-commerce et de la communication."
+details:
+  - "Intégration d'interfaces web responsives dans le respect des standards W3C."
+  - "Mise en place de tests d'intégration et audits de performance Lighthouse."
+  - "Collaboration en équipe agile sur des projets à fort trafic."
+skills:
+  - "JavaScript"
+  - "HTML5 / CSS3"
+  - "Design Systems"
+  - "Web Performance"
+  - "Agile"

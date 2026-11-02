@@ -1,0 +1,18 @@
+role: "Développeur Web Indépendant"
+company: "JEAN DUPONT"
+dateStart: "2024"
+current: true
+location: "Lyon, France"
+summary: "Conception et réalisation d'applications web sur-mesure, éco-conçues, rapides et accessibles pour des clients en France et à distance."
+details:
+  - "Développement de sites statiques haute performance avec Astro et TypeScript."
+  - "Accompagnement des entreprises locales en région Auvergne-Rhône-Alpes dans leur présence numérique."
+  - "Optimisation de la performance (Core Web Vitals) et de l'accessibilité WCAG AA."
+  - "Conception de design systems CSS maintenables et durables."
+skills:
+  - "Astro"
+  - "TypeScript"
+  - "Éco-conception"
+  - "Accessibilité WCAG"
+  - "CSS Custom Properties"
+  - "Jamstack"

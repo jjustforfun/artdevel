@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page introuvable — 404">
+  <section class="page-404">
+    <div class="container">
+      <div class="error-content">
+        <span class="error-code">404</span>
+        <h1>Page introuvable</h1>
+        <p class="error-text">
+          Cette page s'est peut-être envolée, ou n'a jamais existé.<br />
+          Pas de panique, le reste du site est toujours là&nbsp;!
+        </p>
+        <div class="error-actions">
+          <a href="/" class="btn btn-primary">Retour à l'accueil (FR)</a>
+          <a href="/en/" class="btn btn-secondary">Home (EN)</a>
+          <a href="/ru/" class="btn btn-secondary">Главная (RU)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-404 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+  }
+
+  .error-content {
+    max-width: 520px;
+  }
+
+  .error-code {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: clamp(5rem, 15vw, 10rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--border);
+    margin-bottom: var(--space-4);
+    user-select: none;
+  }
+
+  h1 {
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-h2);
+    color: var(--text);
+    margin-bottom: var(--space-4);
+  }
+
+  .error-text {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin-bottom: var(--space-8);
+  }
+
+  .error-actions {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.7rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-small);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      background-color var(--duration-fast) var(--ease),
+      color var(--duration-fast) var(--ease),
+      transform var(--duration-fast) var(--ease),
+      box-shadow var(--duration-fast) var(--ease);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-primary {
+    background-color: var(--cta);
+    color: var(--cta-contrast, #ffffff);
+    border: 1px solid var(--cta);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary:hover {
+    box-shadow: var(--shadow-md);
+    color: var(--cta-contrast, #ffffff);
+  }
+
+  .btn-secondary {
+    border: 1px solid var(--border);
+    color: var(--text);
+    background-color: var(--surface);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+</style>

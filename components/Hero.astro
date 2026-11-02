@@ -1,0 +1,393 @@
+---
+interface Props {
+  badge?: string;
+  title?: string;
+  subtitle?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  proofs?: string[];
+}
+
+const {
+  badge = "Disponible pour alternance — sept. 2026",
+  title = "Je conçois des sites web rapides et efficaces pour les indépendants et PME.",
+  subtitle = "Développeur web · Lyon, France · Alternance & freelance",
+  primaryCta = { label: "Voir mes projets", href: "/projets/" },
+  secondaryCta = { label: "Me contacter", href: "/a-propos/" },
+  proofs = [],
+} = Astro.props;
+
+// Split title into lines if separated by <br> or newlines, or render as spans
+const titleLines = title
+  .split(/<br\s*\/?>|\n/)
+  .map((line) => line.trim())
+  .filter(Boolean);
+---
+
+<section class="hero">
+  <!-- Fond : motif de grille de points subtil -->
+  <div class="hero-dots-pattern" aria-hidden="true"></div>
+
+  <!-- 1. Badge en haut -->
+  <div class="hero-badge">
+    <span class="hero-badge-dot" aria-hidden="true"></span>
+    <span class="hero-badge-text">{badge}</span>
+  </div>
+
+  <!-- 2. Titre principal (h1) -->
+  <h1 class="hero-title">
+    {
+      titleLines.length > 1 ? (
+        titleLines.map((line, index) => (
+          <span class="hero-title-line" style={`--line-index: ${index};`} set:html={line} />
+        ))
+      ) : (
+        <span class="hero-title-line" style="--line-index: 0;" set:html={title} />
+      )
+    }
+  </h1>
+
+  <!-- 3. Sous-titre -->
+  <p class="hero-subtitle">{subtitle}</p>
+
+  <!-- 4. 2 boutons CTA -->
+  <div class="hero-actions">
+    <a href={primaryCta.href} class="btn-hero-primary" data-magnetic data-magnetic-strength="0.2">
+      {primaryCta.label}
+    </a>
+    <a href={secondaryCta.href} class="btn-hero-secondary" data-magnetic data-magnetic-strength="0.2">
+      {secondaryCta.label}
+    </a>
+  </div>
+
+  <!-- Preuves optionnelles si passées -->
+  {
+    proofs && proofs.length > 0 && (
+      <ul class="hero-proofs">
+        {proofs.map((proof) => (
+          <li>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+            <span>{proof}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</section>
+
+<script>
+  // Parallaxe douce du motif de points : défile légèrement plus lent que la page (uniquement desktop)
+  function initHeroParallax() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 768px), (pointer: coarse)').matches) return;
+    const pattern = document.querySelector('.hero-dots-pattern');
+    if (!pattern) return;
+    if (pattern.hasAttribute('data-init')) return;
+    pattern.setAttribute('data-init', '');
+    let ticking = false;
+
+    const update = () => {
+      const hero = pattern.closest('.hero');
+      if (hero) {
+        const rect = hero.getBoundingClientRect();
+        const progress = Math.min(Math.max(-rect.top / (rect.height || 1), 0), 1);
+        (pattern as HTMLElement).style.transform = `translateY(${progress * 48}px)`;
+      }
+      ticking = false;
+    };
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+  }
+
+  const scheduleHero = (cb: () => void) => {
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(cb, { timeout: 1200 });
+    } else {
+      setTimeout(cb, 50);
+    }
+  };
+
+  document.addEventListener('astro:page-load', () => scheduleHero(initHeroParallax));
+  scheduleHero(initHeroParallax);
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-24);
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* 5. Fond : motif de grille de points subtil (0.04 clair / 0.08 sombre) */
+  .hero-dots-pattern {
+    position: absolute;
+    inset: -2rem -4rem;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background-image: radial-gradient(var(--text) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  }
+
+  :global(.dark) .hero-dots-pattern,
+  :global([data-theme="dark"]) .hero-dots-pattern {
+    opacity: 0.08;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not(.light)) .hero-dots-pattern {
+      opacity: 0.08;
+    }
+  }
+
+  /* 1. Badge */
+  .hero-badge {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: var(--font-size-small);
+    font-weight: 500;
+    margin-bottom: var(--space-6);
+  }
+
+  .hero-badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--success);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .hero-badge-dot::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background-color: var(--success);
+    opacity: 0.6;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(1.8);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+  }
+
+  /* 2. Titre principal (h1) - Visibilité immédiate pour LCP optimal */
+  .hero-title {
+    position: relative;
+    z-index: 1;
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+    letter-spacing: var(--letter-spacing-h1);
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+  }
+
+  .hero-title-line {
+    display: block;
+  }
+
+  .hero-title :global(.hero-accent) {
+    color: var(--accent);
+  }
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .hero-title :global(.hero-accent) {
+      background: linear-gradient(135deg, var(--color-accent), var(--color-energy));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+  }
+
+  /* 3. Sous-titre (p) */
+  .hero-subtitle {
+    position: relative;
+    z-index: 1;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin-bottom: var(--space-8);
+  }
+
+  /* 4. CTA Buttons */
+  .hero-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .hero-actions {
+      flex-direction: row;
+      align-items: center;
+      width: auto;
+    }
+  }
+
+  .btn-hero-primary,
+  .btn-hero-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform var(--duration-fast) var(--ease),
+      background-color var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease),
+      color var(--duration-fast) var(--ease),
+      box-shadow var(--duration-fast) var(--ease);
+    text-align: center;
+  }
+
+  /* Primaire : fond --cta (orange), texte var(--cta-contrast), hover scale(1.02) + ombre */
+  .btn-hero-primary {
+    background-color: var(--cta);
+    color: var(--cta-contrast, #ffffff);
+    border: 1px solid var(--cta);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-hero-primary:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
+    color: var(--cta-contrast, #ffffff);
+  }
+
+  .btn-hero-primary:active {
+    transform: scale(0.98);
+  }
+
+  /* Secondaire : "Me contacter" → outline --accent, hover fond accent + texte blanc */
+  .btn-hero-secondary {
+    background-color: transparent;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+  }
+
+  .btn-hero-secondary:hover {
+    background-color: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+  }
+
+  .btn-hero-secondary:active {
+    transform: scale(0.98);
+  }
+
+  /* Preuves */
+  .hero-proofs {
+    position: relative;
+    z-index: 1;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    padding: 0;
+    margin-top: var(--space-12);
+    opacity: 0;
+    animation: fadeIn 400ms var(--ease) forwards;
+    animation-delay: 850ms;
+  }
+
+  .hero-proofs li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-small);
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  .hero-proofs svg {
+    color: var(--success);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Accessibility : prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-badge,
+    .hero-badge-dot::after,
+    .hero-title-line,
+    .hero-subtitle,
+    .hero-actions,
+    .hero-proofs {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+
+    .hero-badge-dot::after {
+      display: none;
+    }
+  }
+</style>

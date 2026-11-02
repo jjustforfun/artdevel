@@ -1,0 +1,220 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Timeline from '../../components/Timeline.astro';
+import CTAButton from '../../components/CTAButton.astro';
+import FAQ from '../../components/FAQ.astro';
+import { siteConfig } from '../../data/site';
+import { generatePersonSchema, generateFAQSchema } from '../../lib/seo';
+import { getCollection } from 'astro:content';
+
+const rawExperiences = await getCollection('experience');
+const experiences = rawExperiences
+  .sort((a, b) => {
+    if (a.data.current && !b.data.current) return -1;
+    if (!a.data.current && b.data.current) return 1;
+    return parseInt(b.data.dateStart) - parseInt(a.data.dateStart);
+  })
+  .map((e) => e.data);
+
+const faqItems = [
+  {
+    question: "Где вы находитесь и в каких регионах работаете?",
+    answer: "Я нахожусь в Лионе (регион Овернь-Рона-Альпы, Франция). Я работаю локально в Лионе, Вийёрбане, Броне, Венисьё, Калюир-э-Кюир и Экюли, а также дистанционно по всему миру."
+  },
+  {
+    question: "Что такое экологичный веб-сайт (эко-дизайн)?",
+    answer: "Экологичный веб-сайт оптимизирован для минимального потребления вычислительных ресурсов и энергии. Это означает чистый код, отсутствие тяжелых трекеров и мгновенную загрузку страниц."
+  },
+  {
+    question: "Какие технологии вы используете в разработке?",
+    answer: "Основной стек включает Astro, TypeScript, семантический HTML5 и Vanilla CSS. Это гарантирует максимальную скорость, безопасность и простоту поддержки."
+  },
+  {
+    question: "Соответствуют ли сайты стандартам доступности?",
+    answer: "Да, все разрабатываемые сайты соответствуют стандарту доступности WCAG 2.2 AA (полная навигация с клавиатуры, контрастность цветов и доступность для людей с ограниченными возможностями)."
+  }
+];
+
+const personSchema = generatePersonSchema('ru');
+const faqSchema = generateFAQSchema(faqItems);
+---
+
+<BaseLayout
+  title="Обо мне"
+  description="Узнайте о подходе Жана Дюпона к созданию сайтов для профессионалов в Лионе и удалённо."
+  jsonLd={[personSchema, faqSchema]}
+>
+  <div class="container">
+    <header class="page-header">
+      <div class="expertise-badge">Прямое сотрудничество</div>
+      <h1 class="page-title">Сайт, созданный вокруг вашей деятельности</h1>
+      <p class="subtitle">
+         Я создаю сайты, которые делают вашу деятельность понятнее, вызывают доверие и упрощают контакт с вами.
+      </p>
+    </header>
+
+    <div class="profile-grid">
+      <section class="expertise-section">
+        <h2>Что я привношу в проект</h2>
+        <div class="expertise-cards">
+          <div class="exp-card">
+            <h3>Присутствие, которому доверяют</h3>
+            <p>Понятная структура для представления вашей деятельности, услуг и причин выбрать вас.</p>
+          </div>
+          <div class="exp-card">
+            <h3>Комфортный опыт</h3>
+            <p>Удобный сайт на компьютере, планшете и мобильном устройстве, без лишних препятствий.</p>
+          </div>
+          <div class="exp-card">
+            <h3>Надёжная основа</h3>
+            <p>Быстрый и поддерживаемый сайт, который может развиваться вместе с вашей деятельностью.</p>
+          </div>
+          <div class="exp-card">
+            <h3>Лучшая видимость</h3>
+            <p>Контент и организация, которые помогают будущим клиентам найти вас в Google и ИИ-помощниках.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bio-section">
+      <div class="bio-content">
+        <h2>Философия и подход</h2>
+        <p>
+           Я подхожу к веб-разработке внимательно: каждое решение должно сделать сайт понятнее, полезнее и легче в поддержке.
+        </p>
+        <p>
+           Я базируюсь в Лионе и напрямую работаю с профессионалами региона Овернь-Рона-Альпы и всей Франции.
+        </p>
+
+        <div class="cta-wrapper">
+          <CTAButton href={`mailto:${siteConfig.email}`} variant="primary">
+            Связаться по email
+          </CTAButton>
+          <CTAButton href={siteConfig.socials.github} variant="outline" external>
+            Посмотреть GitHub
+          </CTAButton>
+        </div>
+      </div>
+      </section>
+    </div>
+
+    <section class="experience-section">
+      <h2>Опыт и карьера</h2>
+      <Timeline items={experiences} locale="ru" />
+    </section>
+
+    <FAQ items={faqItems} title="Часто задаваемые вопросы (FAQ)" />
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+    max-width: 800px;
+  }
+
+  .page-title {
+    font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
+    margin-bottom: var(--space-4);
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    font-size: var(--text-xl);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  .profile-grid {
+    display: grid;
+    gap: var(--space-16);
+    margin-bottom: var(--space-24);
+  }
+
+  @media (min-width: 1024px) {
+    .profile-grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .expertise-section h2, .bio-section h2 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-8);
+    position: relative;
+    padding-bottom: var(--space-2);
+  }
+
+  .expertise-section h2::after, .bio-section h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--color-accent);
+  }
+
+  .expertise-cards {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .exp-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: var(--space-6);
+    border-radius: var(--radius-md);
+  }
+
+  .exp-card h3 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+    color: var(--color-accent);
+  }
+
+  .exp-card p {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+  }
+
+  .expertise-badge {
+    display: inline-block;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-4);
+  }
+
+  .bio-content {
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .bio-content p {
+    margin-bottom: var(--space-4);
+  }
+
+  .cta-wrapper {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+    flex-wrap: wrap;
+  }
+
+  .experience-section {
+    padding-top: var(--space-16);
+    border-top: 1px solid var(--color-border);
+    margin-bottom: var(--space-24);
+  }
+
+  .experience-section h2 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-12);
+  }
+</style>

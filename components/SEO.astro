@@ -1,0 +1,52 @@
+---
+import { getLocaleFromUrl, type Locale } from '../lib/i18n';
+import { getCanonicalUrl, getHreflangLinks } from '../lib/seo';
+import { siteConfig } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  jsonLd?: object | object[];
+}
+
+const { title, description, image, jsonLd } = Astro.props;
+const pathname = Astro.url.pathname;
+const locale: Locale = getLocaleFromUrl(pathname);
+
+const pageTitle = title ? `${title} — ${siteConfig.name}` : `${siteConfig.name} — ${siteConfig.tagline[locale]}`;
+const pageDescription = description || siteConfig.tagline[locale];
+const canonicalUrl = getCanonicalUrl(pathname);
+const hreflangLinks = getHreflangLinks(pathname);
+const imageUrl = image ? new URL(image, siteConfig.url).href : undefined;
+
+const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<!-- Primary Meta Tags -->
+<title>{pageTitle}</title>
+<meta name="description" content={pageDescription} />
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Hreflang Tags -->
+{hreflangLinks.map((link) => (
+  <link rel={link.rel} hreflang={link.hreflang} href={link.href} />
+))}
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={pageDescription} />
+{imageUrl && <meta property="og:image" content={imageUrl} />}
+
+<!-- Twitter -->
+<meta name="twitter:card" content={imageUrl ? "summary_large_image" : "summary"} />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={pageDescription} />
+{imageUrl && <meta name="twitter:image" content={imageUrl} />}
+
+<!-- JSON-LD Structured Data -->
+{jsonLdItems.map((item) => (
+  <script type="application/ld+json" set:html={JSON.stringify(item)} />
+))}

@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { siteConfig } from '../data/site';
+---
+
+<BaseLayout
+  title={`Mentions légales · ${siteConfig.name}`}
+  description="Mentions légales, politique de confidentialité et informations relatives au site JEAN DUPONT."
+>
+  <main class="legal-page">
+    <div class="container container-sm">
+      <Breadcrumb items={[
+        { label: 'Accueil', href: '/' },
+        { label: 'Mentions légales' },
+      ]} />
+
+      <h1 class="legal-title">Mentions légales</h1>
+
+      <div class="legal-content">
+        <section>
+          <h2>1. Éditeur du site</h2>
+          <p>
+            Le site <strong>{siteConfig.name}</strong> ({siteConfig.url}) est édité par :<br />
+            <strong>{siteConfig.author}</strong><br />
+            Statut : Auto-entrepreneur / Développeur indépendant<br />
+            Localisation : {siteConfig.location.region}, {siteConfig.location.country}<br />
+            Email : <a href={`mailto:${siteConfig.email}`} class="link-underline">{siteConfig.email}</a>
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Hébergement</h2>
+          <p>
+            Ce site est hébergé de manière statique et sécurisée par :<br />
+            <strong>GitHub Pages / Vercel Inc.</strong><br />
+            Infrastructure distribuée mondiale avec certificat SSL/TLS Let's Encrypt.
+          </p>
+        </section>
+
+        <section>
+          <h2>3. Propriété intellectuelle</h2>
+          <p>
+            L'ensemble des contenus (textes, logos, architectures, codes sources de démonstration sauf indication contraire) présents sur ce site relèvent de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Tous droits de reproduction réservés.
+          </p>
+        </section>
+
+        <section>
+          <h2>4. Données personnelles & cookies</h2>
+          <p>
+            Ce site respecte scrupuleusement la vie privée des utilisateurs et les recommandations du RGPD & de la CNIL :
+          </p>
+          <ul>
+            <li><strong>Aucun traceur publicitaire</strong> ni cookie tiers n'est utilisé.</li>
+            <li>Aucun suivi inter-sites (cross-site tracking).</li>
+            <li>Les données transmises via les liens de contact par email ne sont utilisées que pour répondre aux demandes professionnelles et ne sont jamais cédées à des tiers.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>5. Éco-conception & Accessibilité</h2>
+          <p>
+            Ce site est conçu selon les principes du numérique responsable et de l'accessibilité web (RGAA / WCAG 2.1 AA) : HTML sémantique, CSS optimisé sans surcoût JavaScript, contraste vérifié et navigation clavier fluide.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .legal-page {
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-16);
+  }
+
+  .container-sm {
+    max-width: 760px;
+  }
+
+  .legal-title {
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+    margin-bottom: var(--space-8);
+    color: var(--text);
+  }
+
+  .legal-content section {
+    margin-bottom: var(--space-8);
+  }
+
+  .legal-content h2 {
+    font-size: var(--font-size-h2);
+    margin-bottom: var(--space-3);
+    color: var(--text);
+  }
+
+  .legal-content p,
+  .legal-content ul {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: var(--space-4);
+  }
+
+  .legal-content ul {
+    padding-left: var(--space-6);
+  }
+
+  .legal-content li {
+    margin-bottom: var(--space-2);
+  }
+
+  .legal-content strong {
+    color: var(--text);
+  }
+</style>

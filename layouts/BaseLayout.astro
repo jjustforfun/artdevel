@@ -1,0 +1,275 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BackToTop from '../components/BackToTop.astro';
+import SEO from '../components/SEO.astro';
+import { getLocaleFromUrl, type Locale } from '../lib/i18n';
+import '../styles/tokens.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  jsonLd?: object | object[];
+}
+
+const { title, description, image, jsonLd } = Astro.props;
+const pathname = Astro.url.pathname;
+const locale: Locale = getLocaleFromUrl(pathname);
+
+const skipLinkText = {
+  fr: 'Aller au contenu principal',
+  en: 'Skip to main content',
+  ru: 'Перейти к основному содержимому',
+}[locale] || 'Aller au contenu principal';
+---
+
+<!DOCTYPE html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+    <SEO title={title} description={description} image={image} jsonLd={jsonLd} />
+
+    <!-- Préchargement des polices critiques auto-hébergées pour éliminer le FOIT / CLS -->
+    <link rel="preload" href="/fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={locale === 'ru' ? '/fonts/caveat-cyrillic.woff2' : '/fonts/caveat-latin.woff2'} as="font" type="font/woff2" crossorigin />
+    {locale === 'ru' && (
+      <>
+        <link rel="preload" href="/fonts/inter-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
+        <link rel="preload" href="/fonts/jetbrains-mono-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
+      </>
+    )}
+
+    <!-- View Transitions : fade douce 200ms sur le contenu principal -->
+    <ClientRouter />
+
+    <!-- Script inline anti-FOUC pour le thème -->
+    <script is:inline>
+      try {
+        var savedTheme = localStorage.getItem('theme');
+        var theme = savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    </script>
+  </head>
+
+  <body>
+    <a href="#main-content" class="skip-link">{skipLinkText}</a>
+    <Header />
+    <div class="page-progress" id="page-progress" aria-hidden="true">
+      <div class="page-progress__bar" id="page-progress-bar"></div>
+    </div>
+    <main id="main-content" class="main-body" transition:animate="fade">
+      <slot />
+    </main>
+    <Footer />
+    <BackToTop />
+  </body>
+</html>
+
+<script>
+  let interactiveAttached = false;
+
+  function initRevealObserver() {
+    const revealEls = document.querySelectorAll('[data-reveal]');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-revealed');
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+      );
+      revealEls.forEach((el) => io.observe(el));
+    } else {
+      revealEls.forEach((el) => el.classList.add('is-revealed'));
+    }
+  }
+
+  // Barre de progression globale (désactivée sur les articles qui ont la leur)
+  let progressBound = false;
+  function initPageProgress() {
+    const wrap = document.getElementById('page-progress');
+    const bar = document.getElementById('page-progress-bar');
+    if (!wrap || !bar) return;
+    if (document.querySelector('.reading-progress')) {
+      wrap.style.display = 'none';
+      return;
+    }
+    wrap.style.display = '';
+    if (progressBound) return;
+    progressBound = true;
+    let ticking = false;
+    const update = () => {
+      const currentBar = document.getElementById('page-progress-bar');
+      if (!currentBar) return;
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      currentBar.style.width = `${Math.min(progress, 100)}%`;
+      ticking = false;
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+  }
+
+  // Micro-interactions globales : halo [data-glow] + boutons magnétiques [data-magnetic]
+  function initInteractive() {
+    if (interactiveAttached) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(pointer: fine)').matches;
+    if (reduceMotion || !finePointer) return;
+    interactiveAttached = true;
+
+    document.addEventListener(
+      'pointermove',
+      (event) => {
+        const card = (event.target as Element).closest?.('[data-glow]') as HTMLElement | null;
+        if (card) {
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty('--mx', `${((event.clientX - rect.left) / rect.width) * 100}%`);
+          card.style.setProperty('--my', `${((event.clientY - rect.top) / rect.height) * 100}%`);
+        }
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      'pointermove',
+      (event) => {
+        const btn = (event.target as Element).closest?.('[data-magnetic]') as HTMLElement | null;
+        if (!btn) return;
+        const rect = btn.getBoundingClientRect();
+        const strength = Number(btn.dataset.magneticStrength ?? 0.25);
+        const dx = (event.clientX - (rect.left + rect.width / 2)) * strength;
+        const dy = (event.clientY - (rect.top + rect.height / 2)) * strength;
+        btn.style.transform = `translate(${dx}px, ${dy}px)`;
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      'pointerout',
+      (event) => {
+        const related = event.relatedTarget as Node | null;
+        const btn = (event.target as Element).closest?.('[data-magnetic]') as HTMLElement | null;
+        if (!btn || (related && btn.contains(related))) return;
+        btn.style.transition = 'transform 300ms cubic-bezier(0.22, 1, 0.36, 1)';
+        btn.style.transform = '';
+        btn.addEventListener(
+          'transitionend',
+          () => {
+            btn.style.transition = '';
+          },
+          { once: true }
+        );
+      },
+      { passive: true }
+    );
+  }
+
+  // Le <body> est recréé à chaque navigation (view transitions) : on initialise
+  // une seule fois par DOM, via astro:page-load (déclenché aussi au 1er chargement).
+  function onPageReady() {
+    const body = document.body;
+    if (body.dataset.readyInited === '1') return;
+    body.dataset.readyInited = '1';
+
+    initPageProgress();
+
+    // Priorité au premier rendu : différer les observers et interactions lourdes pour libérer le thread principal
+    const schedule = (cb: () => void) => {
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(cb, { timeout: 1200 });
+      } else {
+        setTimeout(cb, 50);
+      }
+    };
+
+    schedule(() => {
+      initRevealObserver();
+      initInteractive();
+    });
+  }
+
+  document.addEventListener('astro:page-load', onPageReady);
+  onPageReady();
+</script>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    left: var(--space-4);
+    z-index: 999;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface);
+    color: var(--color-accent);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    text-decoration: none;
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    transition: top var(--transition-fast);
+  }
+
+  .skip-link:focus-visible {
+    top: var(--space-4);
+  }
+
+  .main-body {
+    flex: 1;
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-16);
+  }
+
+  .page-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    z-index: 120;
+    pointer-events: none;
+    background-color: transparent;
+  }
+
+  .page-progress__bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(
+      90deg,
+      var(--color-accent),
+      color-mix(in srgb, var(--color-accent) 60%, var(--color-energy))
+    );
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+    transition: width 60ms linear;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-progress__bar {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,362 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CTAButton from '../../components/CTAButton.astro';
+import Hero from '../../components/Hero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import StatsStrip from '../../components/StatsStrip.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import MethodSteps from '../../components/MethodSteps.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import Marquee from '../../components/Marquee.astro';
+import ContactForm from '../../components/ContactForm.astro';
+import { siteConfig } from '../../data/site';
+import { getCollection } from 'astro:content';
+
+const allProjects = await getCollection('projects', ({ data }) => data.locale === 'ru');
+const projects = [...allProjects]
+  .sort((a, b) => {
+    if (a.data.featured && !b.data.featured) return -1;
+    if (!a.data.featured && b.data.featured) return 1;
+    return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+  })
+  .slice(0, 3);
+
+const stats = [
+  { value: String(allProjects.length), label: "проектов сдано клиентам" },
+  { value: "0", label: "сторонних cookies и трекеров" },
+  { value: "AA", label: "соответствие WCAG 2.2 в каждой работе" },
+  { value: "100", label: "целевая оценка Lighthouse" },
+];
+
+const services = [
+  {
+    icon: "globe",
+    title: "Сайт для профессионалов",
+    description: "Сайт, созданный вокруг вашей деятельности, клиентов и действий, которые вы хотите вызвать.",
+    points: ["Структура, которая убеждает", "Удобный путь на мобильных", "Простой контакт"],
+  },
+  {
+    icon: "gauge",
+    title: "Обновление существующего сайта",
+    description: "Новый старт для устаревшего сайта, которым сложно пользоваться или который больше не отражает ваш бизнес.",
+    points: ["Понятный контент и навигация", "Современный адаптивный дизайн", "Сопровождение запуска"],
+  },
+  {
+    icon: "globe",
+    title: "Видимость в Google",
+    description: "Структура и контент, которые помогают будущим клиентам найти вас при поиске ваших услуг.",
+    points: ["Страницы по намерениям поиска", "Понятные локальные сигналы", "Чистая техническая база"],
+  },
+  {
+    icon: "sparkles",
+    title: "Интеллектуальный помощник",
+    description: "Виртуальный помощник, который отвечает на частые вопросы и направляет посетителя к следующему шагу.",
+    points: ["Ответы на основе ваших материалов", "Переход к контакту или записи", "Контролируемая настройка"],
+  },
+  {
+    icon: "wrench",
+    title: "Поддержка и развитие",
+    description: "Сайт продолжает работать после запуска: исправления, обновления и новые функции по мере ваших потребностей.",
+    points: ["Понятные задачи", "Поддержка в долгую", "Развитие со временем"],
+  },
+];
+
+const methodSteps = [
+  {
+    title: "Обсуждение и скоуп",
+    description: "Определяем цели, аудиторию и объём работ. Вы точно знаете, за что платите.",
+  },
+  {
+    title: "Проектирование и контент",
+    description: "Структура, пользовательские сценарии и контент для конверсии — до первой строки кода.",
+  },
+  {
+    title: "Разработка и тестирование",
+    description: "Я разрабатываю, тестирую и проверяю доступность, производительность и совместимость.",
+  },
+  {
+    title: "Запуск и поддержка",
+    description: "Аккуратный запуск, обучение и сопровождение после релиза.",
+  },
+];
+---
+
+<BaseLayout
+  title="Главная"
+  description="Жан Дюпон создаёт и обновляет сайты для профессионалов, которым важно быть найденными, вызывать доверие и получать больше обращений."
+>
+  <div class="container">
+    <!-- Hero -->
+    <Hero
+      badge="Готов к новым проектам"
+      title={`
+        Сайт, который помогает
+        <span class="hero-accent"> выбрать вас</span>.
+      `}
+      subtitle="Я создаю и обновляю сайты для профессионалов, которым важно быть найденными, вызывать доверие и получать больше обращений."
+      primaryCta={{ label: "Запустить проект", href: `mailto:${siteConfig.email}` }}
+      secondaryCta={{ label: "Посмотреть работы", href: "/ru/proekty/" }}
+      proofs={["Для мобильных устройств", "Видимость в Google", "Удобный контакт"]}
+    />
+  </div>
+
+  <!-- Proof -->
+  <section class="home-section stats-section" aria-label="Ключевые показатели" data-reveal>
+    <div class="container">
+      <StatsStrip items={stats} />
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <Marquee
+    label="Ценности и технологии"
+    items={[
+      "WCAG 2.2 AA",
+      "0 сторонних cookies",
+      "Экодизайн",
+      "100% Lighthouse",
+      "Astro · TypeScript",
+      "Доступность",
+    ]}
+  />
+
+  <!-- Services -->
+  <section class="home-section">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Что я создаю"
+        title="Сайт, который работает на ваш бизнес"
+        subtitle="Создание, обновление и развитие: каждый проект начинается с вашей деятельности и приводит к присутствию, которое побуждает действовать."
+      />
+      <div class="services-grid">
+        {services.map((service, index) => (
+          <div class="grid-reveal" data-reveal style={`--reveal-delay: ${index * 70}ms`}>
+            <ServiceCard
+              icon={service.icon}
+              title={service.title}
+              description={service.description}
+              points={service.points}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Selected projects -->
+  <section class="home-section projects-section">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Работы"
+        title="Избранные проекты"
+        subtitle="Обзор недавних работ, объединяющих доступность, экодизайн и влияние на бизнес."
+      />
+      <div class="projects-grid">
+        {projects.map((project, index) => (
+          <div class="grid-reveal" data-reveal style={`--reveal-delay: ${index * 90}ms`}>
+            <ProjectCard project={project} />
+          </div>
+        ))}
+      </div>
+      <div class="section-cta">
+        <CTAButton href="/ru/proekty/" variant="secondary">Все проекты →</CTAButton>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method -->
+  <section class="home-section method-section">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Процесс"
+        title="Прозрачный рабочий процесс"
+        subtitle="Структурированный подход из четырех этапов для обеспечения успеха вашего проекта."
+      />
+      <MethodSteps steps={methodSteps} />
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="home-section" data-reveal>
+    <div class="container">
+      <div class="final-cta">
+        <p class="final-cta-eyebrow">Обсудим ваш проект</p>
+        <h2 class="final-cta-title">Готовы оптимизировать свое онлайн-присутствие?</h2>
+        <p class="final-cta-text">
+          Расскажите о своей деятельности и цели. Я вернусь к вам с первым взглядом на вашу задачу.
+        </p>
+        <ContactForm locale="ru" compact />
+        <div class="social-links">
+          <a href={siteConfig.socials.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <span class="separator">/</span>
+          <a href={siteConfig.socials.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Местное присутствие -->
+  <section class="home-section geo-local-section" data-reveal>
+    <div class="container">
+      <div class="geo-card">
+        <h2>Базируюсь в Лионе, работаю по всей Франции</h2>
+        <p>
+          Я базируюсь в <strong>Лионе, Франция</strong> и работаю с профессионалами региона Овернь-Рона-Альпы (Вийёрбан, Брон, Венисьё) и удалённо по всей Франции. Каждый обмен остаётся прямым и понятным.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .home-section {
+    padding-top: var(--space-24);
+    padding-bottom: var(--space-24);
+  }
+
+  .stats-section {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-6);
+    margin-top: var(--space-12);
+  }
+
+  @media (min-width: 768px) {
+    .services-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .services-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .projects-section {
+    background-color: var(--color-surface);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-8);
+    margin-top: var(--space-12);
+  }
+
+  @media (min-width: 768px) {
+    .projects-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .section-cta {
+    margin-top: var(--space-12);
+    text-align: center;
+  }
+
+  .method-section {
+    background-color: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .final-cta {
+    background-color: var(--color-accent);
+    background-image: radial-gradient(
+      circle at 15% 15%,
+      color-mix(in srgb, var(--color-energy) 28%, transparent),
+      transparent 60%
+    );
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    padding: var(--space-12) var(--space-6);
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .final-cta-eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent-contrast);
+    opacity: 0.85;
+    margin-bottom: var(--space-3);
+  }
+
+  .final-cta-title {
+    font-size: var(--text-4xl);
+    margin-bottom: var(--space-4);
+    color: var(--color-accent-contrast);
+  }
+
+  .final-cta-text {
+    font-size: var(--text-lg);
+    color: var(--color-accent-contrast);
+    opacity: 0.9;
+    margin-bottom: var(--space-8);
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--leading-relaxed);
+  }
+
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-accent-contrast);
+    opacity: 0.92;
+  }
+
+  .social-links a:hover {
+    color: var(--color-accent-contrast);
+    text-decoration: underline;
+  }
+
+  .separator {
+    opacity: 0.4;
+  }
+
+  .geo-local-section {
+    padding-top: var(--space-12);
+  }
+
+  .geo-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    padding: var(--space-8);
+    max-width: 720px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .geo-card h2 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-3);
+  }
+
+  .geo-card p {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+</style>

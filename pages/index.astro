@@ -1,0 +1,362 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CTAButton from '../components/CTAButton.astro';
+import Hero from '../components/Hero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import StatsStrip from '../components/StatsStrip.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import MethodSteps from '../components/MethodSteps.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Marquee from '../components/Marquee.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { siteConfig } from '../data/site';
+import { getCollection } from 'astro:content';
+
+const allProjects = await getCollection('projects', ({ data }) => data.locale === 'fr');
+const projects = [...allProjects]
+  .sort((a, b) => {
+    if (a.data.featured && !b.data.featured) return -1;
+    if (!a.data.featured && b.data.featured) return 1;
+    return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+  })
+  .slice(0, 3);
+
+const stats = [
+  { value: String(allProjects.length), label: "projets livrés pour des clients" },
+  { value: "0", label: "cookies ou traqueurs tiers sur mes sites" },
+  { value: "AA", label: "conformité WCAG 2.2 sur chaque livraison" },
+  { value: "100", label: "performance cible sur Lighthouse" },
+];
+
+const services = [
+  {
+    icon: "globe",
+    title: "Création de site pour professionnels",
+    description: "Un site construit autour de votre activité, de vos clients et des actions que vous voulez déclencher.",
+    points: ["Structure pensée pour convaincre", "Parcours adapté aux mobiles", "Demandes de contact facilitées"],
+  },
+  {
+    icon: "gauge",
+    title: "Refonte de site existant",
+    description: "Un nouveau départ pour un site vieillissant, difficile à utiliser ou qui ne reflète plus votre activité.",
+    points: ["Contenus et navigation clarifiés", "Design actuel et responsive", "Mise en ligne accompagnée"],
+  },
+  {
+    icon: "globe",
+    title: "Visibilité sur Google",
+    description: "Une structure et des contenus qui aident vos futurs clients à vous trouver au moment où ils recherchent vos services.",
+    points: ["Pages organisées par intention", "Données locales cohérentes", "Fondations techniques propres"],
+  },
+  {
+    icon: "sparkles",
+    title: "Assistant intelligent intégré",
+    description: "Un assistant virtuel qui répond aux questions fréquentes de vos visiteurs et les oriente vers la bonne action.",
+    points: ["Réponses basées sur vos contenus", "Orientation vers contact ou rendez-vous", "Cadre maîtrisé et évolutif"],
+  },
+  {
+    icon: "wrench",
+    title: "Maintenance et évolution",
+    description: "Votre site continue de vivre après sa mise en ligne : corrections, mises à jour et nouvelles fonctionnalités.",
+    points: ["Interventions claires", "Suivi dans la durée", "Évolutions au fil des besoins"],
+  },
+];
+
+const methodSteps = [
+  {
+    title: "Cadrage & écoute",
+    description: "On définit vos objectifs, votre cible et le périmètre. Vous savez exactement ce que vous payez.",
+  },
+  {
+    title: "Conception & contenu",
+    description: "Structure, parcours utilisateur et contenus optimisés pour convertir — avant la première ligne de code.",
+  },
+  {
+    title: "Développement & tests",
+    description: "Je code, teste et valide accessibilité, performance et compatibilité jusqu'au bout.",
+  },
+  {
+    title: "Lancement & suivi",
+    description: "Mise en ligne soignée, formation, puis accompagnement pour durer dans le temps.",
+  },
+];
+---
+
+<BaseLayout
+  title="Accueil"
+  description="Jean Dupont crée et refond des sites web pour les professionnels qui veulent être trouvés, inspirer confiance et recevoir davantage de demandes."
+>
+  <div class="container">
+    <!-- Hero -->
+    <Hero
+      badge="Disponible pour de nouveaux projets"
+      title={`
+        Un site qui donne envie de
+        <span class="hero-accent"> vous choisir</span>.
+      `}
+      subtitle="Je crée et refonds des sites web pour les professionnels qui veulent être trouvés, inspirer confiance et recevoir davantage de demandes."
+      primaryCta={{ label: "Lancer un projet", href: `mailto:${siteConfig.email}` }}
+      secondaryCta={{ label: "Voir les réalisations", href: "/projets/" }}
+      proofs={["Pensé pour le mobile", "Visibilité Google", "Contact facilité"]}
+    />
+  </div>
+
+  <!-- Preuves -->
+  <section class="home-section stats-section" aria-label="Résultats et chiffres" data-reveal>
+    <div class="container">
+      <StatsStrip items={stats} />
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <Marquee
+    label="Valeurs et technologies"
+    items={[
+      "WCAG 2.2 AA",
+      "0 cookie tiers",
+      "Éco-conçu",
+      "100% Lighthouse",
+      "Astro · TypeScript",
+      "Accessibilité",
+    ]}
+  />
+
+  <!-- Services -->
+  <section class="home-section">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Ce que je peux construire"
+        title="Un site qui travaille pour votre activité"
+        subtitle="Création, refonte et évolution : chaque projet commence par votre métier et se termine par une présence en ligne qui donne envie d’agir."
+      />
+      <div class="services-grid">
+        {services.map((service, index) => (
+          <div class="grid-reveal" data-reveal style={`--reveal-delay: ${index * 70}ms`}>
+            <ServiceCard
+              icon={service.icon}
+              title={service.title}
+              description={service.description}
+              points={service.points}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Projets sélectionnés -->
+  <section class="home-section projects-section">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Réalisations"
+        title="Projets sélectionnés"
+        subtitle="Un aperçu de projets récents alliant accessibilité, éco-conception et impact business."
+      />
+      <div class="projects-grid">
+        {projects.map((project, index) => (
+          <div class="grid-reveal" data-reveal style={`--reveal-delay: ${index * 90}ms`}>
+            <ProjectCard project={project} />
+          </div>
+        ))}
+      </div>
+      <div class="section-cta">
+        <CTAButton href="/projets/" variant="secondary">Découvrir tous les projets →</CTAButton>
+      </div>
+    </div>
+  </section>
+
+  <!-- Méthode -->
+  <section class="home-section method-section">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Processus"
+        title="Une méthode de travail transparente"
+        subtitle="Un accompagnement structuré en quatre étapes clés pour garantir la réussite de votre projet."
+      />
+      <MethodSteps steps={methodSteps} />
+    </div>
+  </section>
+
+  <!-- CTA final -->
+  <section class="home-section" data-reveal>
+    <div class="container">
+      <div class="final-cta">
+        <p class="final-cta-eyebrow">Parlons de votre projet</p>
+        <h2 class="final-cta-title">Prêt à optimiser votre présence en ligne ?</h2>
+        <p class="final-cta-text">
+          Décrivez votre activité et votre objectif. Je reviendrai vers vous avec une première lecture de votre besoin.
+        </p>
+        <ContactForm locale="fr" compact />
+        <div class="social-links">
+          <a href={siteConfig.socials.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <span class="separator">/</span>
+          <a href={siteConfig.socials.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ancrage local -->
+  <section class="home-section geo-local-section" data-reveal>
+    <div class="container">
+      <div class="geo-card">
+        <h2>Basé à Lyon, disponible partout en France</h2>
+        <p>
+          Depuis <strong>Lyon</strong>, je travaille avec les professionnels de la région Auvergne-Rhône-Alpes (Villeurbanne, Bron, Vénissieux) et à distance partout en France. Chaque échange reste direct, clair et adapté à votre activité.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .home-section {
+    padding-top: var(--space-24);
+    padding-bottom: var(--space-24);
+  }
+
+  .stats-section {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-6);
+    margin-top: var(--space-12);
+  }
+
+  @media (min-width: 768px) {
+    .services-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .services-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .projects-section {
+    background-color: var(--color-surface);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-8);
+    margin-top: var(--space-12);
+  }
+
+  @media (min-width: 768px) {
+    .projects-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .section-cta {
+    margin-top: var(--space-12);
+    text-align: center;
+  }
+
+  .method-section {
+    background-color: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .final-cta {
+    background-color: var(--color-accent);
+    background-image: radial-gradient(
+      circle at 15% 15%,
+      color-mix(in srgb, var(--color-energy) 28%, transparent),
+      transparent 60%
+    );
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    padding: var(--space-12) var(--space-6);
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .final-cta-eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent-contrast);
+    opacity: 0.85;
+    margin-bottom: var(--space-3);
+  }
+
+  .final-cta-title {
+    font-size: var(--text-4xl);
+    margin-bottom: var(--space-4);
+    color: var(--color-accent-contrast);
+  }
+
+  .final-cta-text {
+    font-size: var(--text-lg);
+    color: var(--color-accent-contrast);
+    opacity: 0.9;
+    margin-bottom: var(--space-8);
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--leading-relaxed);
+  }
+
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-accent-contrast);
+    opacity: 0.92;
+  }
+
+  .social-links a:hover {
+    color: var(--color-accent-contrast);
+    text-decoration: underline;
+  }
+
+  .separator {
+    opacity: 0.4;
+  }
+
+  .geo-local-section {
+    padding-top: var(--space-12);
+  }
+
+  .geo-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    padding: var(--space-8);
+    max-width: 720px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .geo-card h2 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-3);
+  }
+
+  .geo-card p {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+</style>

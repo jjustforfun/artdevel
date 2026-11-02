@@ -1,0 +1,114 @@
+---
+export type ServiceIcon = 'globe' | 'code' | 'gauge' | 'leaf' | 'wrench' | 'terminal' | 'shield' | 'sparkles';
+
+const SVG_ATTRS = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+
+const ICONS: Record<ServiceIcon, string> = {
+  globe: `<svg ${SVG_ATTRS}><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg>`,
+  code: `<svg ${SVG_ATTRS}><path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/></svg>`,
+  gauge: `<svg ${SVG_ATTRS}><path d="M5.6 18.4A9 9 0 1 1 18.4 18.4"/><path d="M12 13l4-3"/><circle cx="12" cy="13" r="1.2"/></svg>`,
+  leaf: `<svg ${SVG_ATTRS}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`,
+  wrench: `<svg ${SVG_ATTRS}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
+  terminal: `<svg ${SVG_ATTRS}><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>`,
+  shield: `<svg ${SVG_ATTRS}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`,
+  sparkles: `<svg ${SVG_ATTRS}><path d="m12 3-1.4 4.1L7 8.5l3.6 1.4L12 14l1.4-4.1L17 8.5l-3.6-1.4L12 3Z"/><path d="m19 14-.8 2.2L16 17l2.2.8L19 20l.8-2.2L22 17l-2.2-.8L19 14Z"/><path d="m5 14-.8 2.2L2 17l2.2.8L5 20l.8-2.2L8 17l-2.2-.8L5 14Z"/></svg>`,
+};
+
+interface Props {
+  icon?: ServiceIcon;
+  title: string;
+  description: string;
+  points?: string[];
+}
+
+const { icon = 'code', title, description, points = [] } = Astro.props;
+---
+
+<article class="service-card" data-glow>
+  <span class="service-icon" aria-hidden="true" set:html={ICONS[icon]}></span>
+  <h3 class="service-title">{title}</h3>
+  <p class="service-description">{description}</p>
+
+  {points.length > 0 && (
+    <ul class="service-points">
+      {points.map((point) => (
+        <li>{point}</li>
+      ))}
+    </ul>
+  )}
+</article>
+
+<style>
+  .service-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+  }
+
+  .service-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .service-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background-color: var(--color-accent-light);
+    color: var(--color-accent);
+    margin-bottom: var(--space-4);
+  }
+
+  .service-icon :global(svg) {
+    width: 24px;
+    height: 24px;
+  }
+
+  .service-title {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+  }
+
+  .service-description {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+    margin-bottom: var(--space-4);
+  }
+
+  .service-points {
+    list-style: none;
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .service-points li {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .service-points li::before {
+    content: "";
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--color-accent);
+    margin-top: 6px;
+  }
+</style>

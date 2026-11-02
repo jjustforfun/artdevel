@@ -1,0 +1,25 @@
+{
+  "menu": {
+    "open": "Open menu",
+    "close": "Close menu"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "select": "Language",
+    "fr": "Français",
+    "en": "English",
+    "ru": "Русский"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "contactMe": "Contact me",
+    "networks": "Networks",
+    "location": "Location"
+  }
+}

@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import TestimonialCard from '../components/TestimonialCard.astro';
+import { getCollection } from 'astro:content';
+
+const testimonials = [
+  {
+    name: 'Claire',
+    role: 'Gérante de boutique',
+    quote: 'Un accompagnement de A à Z : le site est rapide, élégant et a immédiatement augmenté nos demandes de rendez-vous.',
+    photo: '/avatars/claire.jpg',
+  },
+  {
+    name: 'Thomas',
+    role: 'Restaurateur',
+    quote: 'Livraison dans les délais, communication claire et un résultat à la hauteur. Je recommande vivement.',
+    photo: '/avatars/thomas.jpg',
+  },
+  {
+    name: 'Sophie',
+    role: 'Architecte d’intérieur',
+    quote: 'Jean a su traduire notre univers en un site accessible et soigné. Le travail est propre, précis, professionnel.',
+    photo: '/avatars/sophie.jpg',
+  },
+];
+
+const projects = await getCollection('projects', ({ data }) => data.locale === 'fr');
+
+const sortedProjects = projects.sort((a, b) => {
+  if (a.data.featured && !b.data.featured) return -1;
+  if (!a.data.featured && b.data.featured) return 1;
+  return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+});
+---
+
+<BaseLayout
+  title="Projets"
+  description="Découvrez les projets web sur mesure réalisés par Jean Dupont à Lyon et pour des professionnels partout en France."
+>
+  <div class="container">
+    <header class="page-header">
+      <h1 class="page-title">Projets</h1>
+      <!-- Introduction descriptive -->
+      <p class="subtitle">
+        Découvrez les réalisations et projets web sur-mesure conçus par Jean, développeur web indépendant à Lyon (Auvergne-Rhône-Alpes, France). 
+        Chaque projet est optimisé pour la vitesse, la sobriété numérique et l'accessibilité.
+      </p>
+    </header>
+
+    {sortedProjects.length > 0 ? (
+      <div class="projects-grid">
+        {sortedProjects.map((project, index) => (
+          <div class="grid-reveal" data-reveal style={`--reveal-delay: ${index * 70}ms`}>
+            <ProjectCard project={project} />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="empty-state">Aucun projet disponible pour le moment.</p>
+    )}
+
+    <section class="testimonials-section" data-reveal>
+      <SectionHeading
+        eyebrow="Avis clients"
+        title="Ils m'ont fait confiance"
+        subtitle="Ce que disent celles et ceux qui m'ont confié leur projet."
+      />
+      <div class="testimonials-grid">
+        {testimonials.map((t, index) => (
+          <div class="grid-reveal" data-reveal style={`--reveal-delay: ${index * 80}ms`}>
+            <TestimonialCard name={t.name} role={t.role} quote={t.quote} photo={t.photo} />
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+    max-width: 800px;
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .subtitle {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-8);
+    margin-top: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .empty-state {
+    color: var(--color-text-muted);
+    font-style: italic;
+    padding-top: var(--space-8);
+  }
+
+  .testimonials-section {
+    padding-top: var(--space-24);
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .testimonials-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

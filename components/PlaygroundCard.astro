@@ -1,0 +1,288 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getLocalizedPath } from '../lib/i18n';
+import Tag from './Tag.astro';
+
+interface Props {
+  item: CollectionEntry<'playground'>;
+}
+
+const { item } = Astro.props;
+const { data } = item;
+
+const detailPath = getLocalizedPath('playground', data.locale) + data.slug;
+const formattedDate = new Date(data.date).toLocaleDateString(data.locale, {
+  year: 'numeric',
+  month: 'short',
+});
+
+const typeColors: Record<string, { bg: string; text: string; gradient: string; label: string }> = {
+  experiment: {
+    bg: 'rgba(99, 102, 241, 0.12)',
+    text: '#6366F1',
+    gradient: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(14, 165, 233, 0.15))',
+    label: 'experiment',
+  },
+  vibecoding: {
+    bg: 'rgba(217, 70, 239, 0.12)',
+    text: '#D946EF',
+    gradient: 'linear-gradient(135deg, rgba(217, 70, 239, 0.25), rgba(99, 102, 241, 0.2))',
+    label: 'vibecoding',
+  },
+  'mini-app': {
+    bg: 'rgba(249, 115, 22, 0.12)',
+    text: '#F97316',
+    gradient: 'linear-gradient(135deg, rgba(249, 115, 22, 0.25), rgba(234, 88, 12, 0.15))',
+    label: 'mini-app',
+  },
+  component: {
+    bg: 'rgba(29, 78, 216, 0.12)',
+    text: '#1D4ED8',
+    gradient: 'linear-gradient(135deg, rgba(29, 78, 216, 0.22), rgba(59, 130, 246, 0.15))',
+    label: 'component',
+  },
+  prototype: {
+    bg: 'rgba(16, 185, 129, 0.12)',
+    text: '#10B981',
+    gradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(20, 184, 166, 0.15))',
+    label: 'prototype',
+  },
+  challenge: {
+    bg: 'rgba(244, 63, 94, 0.12)',
+    text: '#F43F5E',
+    gradient: 'linear-gradient(135deg, rgba(244, 63, 94, 0.22), rgba(249, 115, 22, 0.15))',
+    label: 'challenge',
+  },
+  'lab-note': {
+    bg: 'rgba(100, 116, 139, 0.12)',
+    text: '#64748B',
+    gradient: 'linear-gradient(135deg, rgba(100, 116, 139, 0.2), rgba(148, 163, 184, 0.12))',
+    label: 'lab-note',
+  },
+};
+
+const currentTypeConfig = typeColors[data.type] || typeColors.experiment;
+---
+
+<article class="playground-card" data-glow>
+  <a href={detailPath} class="card-link">
+    {data.coverImage ? (
+      <div class="card-media">
+        <img
+          src={data.coverImage}
+          alt={data.title}
+          width={640}
+          height={360}
+          loading="lazy"
+          decoding="async"
+          class="card-cover-img"
+        />
+        <span class="type-pill" style={`background-color: ${currentTypeConfig.bg}; color: ${currentTypeConfig.text};`}>
+          {data.type}
+        </span>
+      </div>
+    ) : (
+      <div class="card-media placeholder" style={`background: ${currentTypeConfig.gradient};`}>
+        <span class="placeholder-type-name">{data.type}</span>
+        <span class="type-pill" style={`background-color: ${currentTypeConfig.bg}; color: ${currentTypeConfig.text};`}>
+          {data.type}
+        </span>
+      </div>
+    )}
+
+    <div class="card-body">
+      <div class="card-header-row">
+        <time datetime={new Date(data.date).toISOString()} class="card-date">{formattedDate}</time>
+        <div class="card-quick-links" aria-label="Liens disponibles">
+          {data.demoUrl && (
+            <span class="quick-icon" title="Lien démo" aria-label="Démo">
+              🔗
+            </span>
+          )}
+          {data.youtubeUrl && (
+            <span class="quick-icon" title="Vidéo disponible" aria-label="Vidéo">
+              📹
+            </span>
+          )}
+          {data.repoUrl && (
+            <span class="quick-icon" title="Code source disponible" aria-label="Code">
+              💻
+            </span>
+          )}
+        </div>
+      </div>
+
+      <h2 class="card-title">
+        {data.title}
+        <span class="card-arrow" aria-hidden="true">→</span>
+      </h2>
+
+      <p class="card-summary">{data.summary}</p>
+
+      {data.stack && data.stack.length > 0 && (
+        <div class="card-tags">
+          {data.stack.map((tech) => (
+            <Tag variant="default">{tech}</Tag>
+          ))}
+        </div>
+      )}
+    </div>
+  </a>
+</article>
+
+<style>
+  .playground-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease),
+      box-shadow var(--duration-fast) var(--ease);
+  }
+
+  .playground-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .card-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-fast) var(--ease);
+  }
+
+  .playground-card:hover .card-cover-img {
+    transform: scale(1.03);
+  }
+
+  .card-media.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .placeholder-type-name {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.28;
+    color: var(--text);
+  }
+
+  .type-pill {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-body {
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+  }
+
+  .card-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .card-quick-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .quick-icon {
+    font-size: 0.875rem;
+    opacity: 0.85;
+    line-height: 1;
+  }
+
+  .card-title {
+    font-family: var(--font-sans);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: var(--space-2);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-arrow {
+    display: inline-block;
+    color: var(--accent);
+    transform: translateX(-4px);
+    opacity: 0;
+    transition: transform var(--duration-fast) var(--ease), opacity var(--duration-fast) var(--ease);
+  }
+
+  .playground-card:hover .card-arrow {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .card-summary {
+    font-size: var(--font-size-small);
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: var(--space-4);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: auto;
+  }
+</style>

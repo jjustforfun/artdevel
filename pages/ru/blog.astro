@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const articles = await getCollection('blog', ({ data }) => data.locale === 'ru' && !data.draft);
+
+const sortedArticles = articles.sort(
+  (a, b) => new Date(b.data.datePublished).getTime() - new Date(a.data.datePublished).getTime()
+);
+---
+
+<BaseLayout
+  title="Блог / Журнал"
+  description="Статьи, размышления и технические заметки о веб-разработке, эко-дизайне и доступности от Жана."
+>
+  <div class="container">
+    <header class="page-header">
+      <h1 class="page-title">Блог / Журнал</h1>
+      <p class="subtitle">
+        Статьи, технические руководства и заметки об экологичной веб-разработке и цифровом ремесле.
+      </p>
+    </header>
+
+    {sortedArticles.length > 0 ? (
+      <div class="articles-list">
+        {sortedArticles.map((article, index) => (
+          <div class="grid-reveal" data-reveal style={`--reveal-delay: ${index * 70}ms`}>
+            <ArticleCard article={article} />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p class="empty-state">В настоящее время опубликованных статей нет.</p>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+    max-width: 720px;
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .subtitle {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  .articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    max-width: 800px;
+    margin-top: var(--space-4);
+  }
+
+  .empty-state {
+    color: var(--color-text-muted);
+    font-style: italic;
+    padding-top: var(--space-8);
+  }
+</style>

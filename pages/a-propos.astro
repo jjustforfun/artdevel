@@ -1,0 +1,219 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Timeline from '../components/Timeline.astro';
+import CTAButton from '../components/CTAButton.astro';
+import FAQ from '../components/FAQ.astro';
+import { siteConfig } from '../data/site';
+import { generatePersonSchema, generateFAQSchema } from '../lib/seo';
+import { getCollection } from 'astro:content';
+
+const rawExperiences = await getCollection('experience');
+const experiences = rawExperiences
+  .sort((a, b) => {
+    if (a.data.current && !b.data.current) return -1;
+    if (!a.data.current && b.data.current) return 1;
+    return parseInt(b.data.dateStart) - parseInt(a.data.dateStart);
+  })
+  .map((e) => e.data);
+
+const faqItems = [
+  {
+    question: "Comment travaillez-vous sur un projet ?",
+    answer: "Je commence par comprendre votre activité, vos clients et l'objectif du site. Chaque choix de contenu, de parcours et de technologie doit ensuite servir une action concrète."
+  },
+  {
+    question: "Pourquoi choisir l'éco-conception pour mon site business ?",
+    answer: "L'éco-conception améliore directement vos performances (Core Web Vitals), réduit vos coûts d'hébergement et améliore l'expérience utilisateur sur mobile et connexions lentes. C'est un avantage compétitif mesurable."
+  },
+  {
+    question: "Quelles technologies privilégiez-vous ?",
+    answer: "Astro, TypeScript et le CSS moderne. Cette stack permet de livrer des sites statiques ultra-rapides, sécurisés et extrêmement faciles à maintenir, tout en gardant une totale liberté de design."
+  },
+  {
+    question: "Garantissez-vous la conformité accessibilité ?",
+    answer: "Absolument. Chaque livraison est testée pour respecter le niveau WCAG 2.2 AA. C'est une exigence non seulement éthique et légale, mais aussi une opportunité d'élargir votre audience."
+  }
+];
+
+const personSchema = generatePersonSchema('fr');
+const faqSchema = generateFAQSchema(faqItems);
+---
+
+<BaseLayout
+  title="À propos | JEAN DUPONT"
+  description="Découvrez la façon de travailler de Jean Dupont, créateur de sites web pour professionnels à Lyon et à distance."
+  jsonLd={[personSchema, faqSchema]}
+>
+  <div class="container">
+    <header class="page-header">
+      <div class="expertise-badge">Une collaboration directe</div>
+      <h1 class="page-title">Un site pensé pour votre activité</h1>
+      <p class="subtitle">
+         Basé à Lyon, je crée des sites qui rendent votre activité plus claire, plus crédible et plus facile à contacter.
+      </p>
+    </header>
+
+    <div class="profile-grid">
+      <section class="expertise-section">
+        <h2>Ce que j’apporte à un projet</h2>
+        <div class="expertise-cards">
+          <div class="exp-card">
+            <h3>Une présence qui inspire confiance</h3>
+            <p>Une structure claire pour présenter votre métier, vos services et les raisons de vous choisir.</p>
+          </div>
+          <div class="exp-card">
+            <h3>Une expérience confortable</h3>
+            <p>Un site agréable à consulter sur ordinateur, tablette et mobile, pour ne laisser personne de côté.</p>
+          </div>
+          <div class="exp-card">
+            <h3>Une base solide</h3>
+            <p>Un site rapide, maintenable et conçu pour accompagner les évolutions de votre activité.</p>
+          </div>
+          <div class="exp-card">
+            <h3>Une meilleure visibilité</h3>
+            <p>Des contenus et une organisation qui aident vos clients à vous trouver sur Google et dans les assistants IA.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bio-section">
+        <h2>Philosophie & Vision</h2>
+        <div class="bio-content">
+          <p>
+             Mon rôle est de transformer vos objectifs professionnels en une expérience web claire et utile. Le design et la qualité technique servent directement l'expérience de vos visiteurs.
+          </p>
+          <p>
+            J'interviens principalement dans la région lyonnaise ({siteConfig.location.cities.slice(0, 4).join(', ')}) et à distance, en plaçant la transparence et la rigueur technique au centre de chaque collaboration.
+          </p>
+          <div class="cta-wrapper">
+            <CTAButton href={`mailto:${siteConfig.email}`} variant="primary">
+              Discuter d'une collaboration
+            </CTAButton>
+            <CTAButton href={siteConfig.socials.linkedin} variant="outline" external>
+              LinkedIn
+            </CTAButton>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="experience-section">
+      <h2>Parcours Professionnel</h2>
+      <Timeline items={experiences} locale="fr" />
+    </section>
+
+    <FAQ items={faqItems} title="Questions & Conseil" />
+  </div>
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+    max-width: 800px;
+  }
+
+  .expertise-badge {
+    display: inline-block;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-4);
+  }
+
+  .page-title {
+    font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
+    margin-bottom: var(--space-4);
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    font-size: var(--text-xl);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  .profile-grid {
+    display: grid;
+    gap: var(--space-16);
+    margin-bottom: var(--space-24);
+  }
+
+  @media (min-width: 1024px) {
+    .profile-grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .expertise-section h2, .bio-section h2 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-8);
+    position: relative;
+    padding-bottom: var(--space-2);
+  }
+
+  .expertise-section h2::after, .bio-section h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--color-accent);
+  }
+
+  .expertise-cards {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .exp-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: var(--space-6);
+    border-radius: var(--radius-md);
+  }
+
+  .exp-card h3 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+    color: var(--color-accent);
+  }
+
+  .exp-card p {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+  }
+
+  .bio-content {
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-muted);
+  }
+
+  .bio-content p {
+    margin-bottom: var(--space-4);
+  }
+
+  .cta-wrapper {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+    flex-wrap: wrap;
+  }
+
+  .experience-section {
+    padding-top: var(--space-16);
+    border-top: 1px solid var(--color-border);
+    margin-bottom: var(--space-24);
+  }
+
+  .experience-section h2 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-12);
+  }
+</style>

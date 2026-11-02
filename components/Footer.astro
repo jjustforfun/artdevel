@@ -1,0 +1,373 @@
+---
+import { siteConfig } from '../data/site';
+import { navConfig } from '../data/nav';
+import { getLocaleFromUrl, getPageKeyFromPathname, getLocalizedPath, LOCALES, useTranslations, type Locale } from '../lib/i18n';
+
+const pathname = Astro.url.pathname;
+const locale: Locale = getLocaleFromUrl(pathname);
+const t = useTranslations(locale);
+const navItems = navConfig[locale];
+const currentPageKey = getPageKeyFromPathname(pathname);
+const currentYear = new Date().getFullYear();
+
+// Inline translations to avoid touching i18n JSON files
+const locationTranslations = {
+  fr: "Basé à Lyon, France",
+  en: "Based in Lyon, France",
+  ru: "Базируется в Лионе, Франция",
+};
+
+const statusTranslations = {
+  fr: "Auto-entrepreneur",
+  en: "Sole Proprietor",
+  ru: "Индивидуальный предприниматель",
+};
+
+const navTranslations = {
+  fr: "Navigation",
+  en: "Navigation",
+  ru: "Навигация",
+};
+
+const coverageTranslations = {
+  fr: "Lyon, Villeurbanne, Bron, Vénissieux et alentours",
+  en: "Lyon, Villeurbanne, Bron, Vénissieux & surroundings",
+  ru: "Лион, Вийёрбан, Брон, Венисьё и окрестности",
+};
+
+const remoteTranslations = {
+  fr: "Disponible à distance partout en France",
+  en: "Available remotely across France",
+  ru: "Доступен удаленно по всей Франции",
+};
+
+const socialTranslations = {
+  fr: "Réseaux sociaux",
+  en: "Social Media",
+  ru: "Социальные сети",
+};
+
+const legalTranslations = {
+  fr: "Mentions légales",
+  en: "Legal Notice",
+  ru: "Правовая информация",
+};
+
+const tLocation = locationTranslations[locale];
+const tStatus = statusTranslations[locale];
+const tNav = navTranslations[locale];
+const tCoverage = coverageTranslations[locale];
+const tRemote = remoteTranslations[locale];
+const tSocial = socialTranslations[locale];
+const tLegal = legalTranslations[locale];
+const hasSocials = Object.values(siteConfig.socials || {}).some((url) => Boolean(url && url.trim()));
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <!-- Colonne 1 — Identité -->
+    <div class="footer-col brand-col">
+      <h3 class="brand-name">{siteConfig.name}</h3>
+      <p class="brand-baseline">{siteConfig.tagline[locale]}</p>
+      <div class="brand-meta">
+        <p class="meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>{tLocation}</span>
+        </p>
+        <p class="meta-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>
+          <span>{tStatus}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Colonne 2 — Navigation -->
+    <nav class="footer-col" aria-label={tNav}>
+      <h4 class="col-title">{tNav}</h4>
+      <ul class="footer-links">
+        {navItems.map((item) => (
+          <li>
+            <a href={item.href} class="footer-link link-underline">{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- Colonne 3 — Contact -->
+    <div class="footer-col">
+      <h4 class="col-title">Contact</h4>
+      <p class="email-wrapper">
+        <a href={`mailto:${siteConfig.email}`} class="contact-email link-underline">
+          {siteConfig.email}
+        </a>
+      </p>
+      <p class="coverage-text">{tCoverage}</p>
+      <p class="remote-text">{tRemote}</p>
+    </div>
+
+    <!-- Colonne 4 — Réseaux sociaux -->
+    {hasSocials && (
+      <div class="footer-col" aria-label={tSocial}>
+        <h4 class="col-title">{tSocial}</h4>
+        <div class="social-links">
+          {siteConfig.socials.linkedin && (
+            <a href={siteConfig.socials.linkedin} target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="LinkedIn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+          )}
+          {siteConfig.socials.instagram && (
+            <a href={siteConfig.socials.instagram} target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Instagram">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            </a>
+          )}
+          {siteConfig.socials.facebook && (
+            <a href={siteConfig.socials.facebook} target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Facebook">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+          )}
+          {siteConfig.socials.github && (
+            <a href={siteConfig.socials.github} target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="GitHub">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+            </a>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+
+  <!-- Bandeau bas -->
+  <div class="footer-bottom">
+    <div class="container footer-bottom-inner">
+      <p class="footer-copyright">
+        &copy; 2026 {siteConfig.name}
+      </p>
+      <div class="footer-bottom-links">
+        <div class="footer-lang-selector" aria-label={t('language.select')}>
+          {LOCALES.map((loc) => {
+            const targetPath = getLocalizedPath(currentPageKey, loc);
+            const isCurrent = loc === locale;
+            return (
+              <a href={targetPath} class={`footer-lang-link ${isCurrent ? 'current' : ''}`}>
+                {loc.toUpperCase()}
+              </a>
+            );
+          })}
+        </div>
+        <span class="footer-separator" aria-hidden="true">·</span>
+        <a href={locale === 'fr' ? '/mentions-legales/' : locale === 'en' ? '/en/legal-notice/' : '/ru/pravovaya-informaciya/'} class="footer-legal-link link-underline">
+          {tLegal}
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    background-color: var(--surface);
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: var(--font-size-small);
+    transition: background-color var(--duration-normal) var(--ease), border-color var(--duration-normal) var(--ease), color var(--duration-normal) var(--ease);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+  }
+
+  @media (min-width: 640px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .brand-col {
+    gap: var(--space-3);
+  }
+
+  .brand-name {
+    font-family: var(--font-brand);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+
+  .brand-baseline {
+    line-height: 1.5;
+  }
+
+  .brand-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.8125rem;
+  }
+
+  .meta-icon {
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+
+  .col-title {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin-bottom: var(--space-1);
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .footer-link {
+    color: var(--text-muted);
+    transition: color var(--transition-fast);
+  }
+
+  .footer-link:hover {
+    color: var(--accent);
+  }
+
+  .email-wrapper {
+    margin-bottom: var(--space-1);
+  }
+
+  .contact-email {
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .contact-email:hover {
+    color: var(--accent);
+  }
+
+  .coverage-text,
+  .remote-text {
+    line-height: 1.5;
+  }
+
+  .social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .social-icon {
+    color: var(--text-muted);
+    transition: color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .social-icon:hover {
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .social-icon svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+    font-size: 0.8125rem;
+  }
+
+  .footer-bottom-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  @media (min-width: 640px) {
+    .footer-bottom-inner {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+
+  .footer-copyright {
+    color: var(--text-muted);
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .footer-lang-selector {
+    display: flex;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .footer-lang-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 1px 4px;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .footer-lang-link:hover {
+    color: var(--text);
+  }
+
+  .footer-lang-link.current {
+    color: var(--text);
+    font-weight: 700;
+    background-color: var(--surface-hover);
+  }
+
+  .footer-separator {
+    color: var(--border);
+  }
+
+  .footer-legal-link {
+    color: var(--text-muted);
+  }
+
+  .footer-legal-link:hover {
+    color: var(--accent);
+  }
+</style>

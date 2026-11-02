@@ -1,0 +1,142 @@
+---
+export interface Stat {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  items: Stat[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="stats-strip" role="list">
+  {items.map((stat) => (
+    <div class="stat" role="listitem">
+      <span class="stat-value" data-value={stat.value}>{stat.value}</span>
+      <span class="stat-label">{stat.label}</span>
+    </div>
+  ))}
+</div>
+
+<script>
+  function animateValue(el: HTMLElement) {
+    const raw = el.dataset.value ?? '';
+    const match = raw.match(/^(\d+)(.*)$/);
+    if (!match) {
+      el.classList.add('is-counted');
+      return;
+    }
+    const target = Number(match[1]);
+    const suffix = match[2];
+    const duration = 900;
+    const start = performance.now();
+
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = `${Math.round(target * eased)}${suffix}`;
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  function initCounters() {
+    const strip = document.querySelector('.stats-strip');
+    if (!strip) return;
+    if (strip.hasAttribute('data-init')) return;
+    strip.setAttribute('data-init', '');
+    const items = Array.from(strip.querySelectorAll<HTMLElement>('.stat-value'));
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      items.forEach((el) => el.classList.add('is-counted'));
+      return;
+    }
+    if (!('IntersectionObserver' in window)) {
+      items.forEach((el) => animateValue(el));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          io.unobserve(entry.target);
+          items.forEach((el) => animateValue(el));
+        });
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(strip);
+  }
+
+  const scheduleStats = (cb: () => void) => {
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(cb, { timeout: 1200 });
+    } else {
+      setTimeout(cb, 60);
+    }
+  };
+
+  document.addEventListener('astro:page-load', () => scheduleStats(initCounters));
+  scheduleStats(initCounters);
+</script>
+
+<style>
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+  }
+
+  @media (max-width: 380px) {
+    .stats-strip {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .stats-strip {
+      padding: var(--space-6);
+      gap: var(--space-4);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .stats-strip {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface-hover);
+  }
+
+  @media (min-width: 640px) {
+    .stat {
+      padding: var(--space-4);
+    }
+  }
+
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-3xl);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--color-accent);
+  }
+
+  .stat-label {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+  }
+</style>

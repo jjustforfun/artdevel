@@ -1,0 +1,188 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PlaygroundCard from '../../components/PlaygroundCard.astro';
+import { getCollection } from 'astro:content';
+
+const allItems = await getCollection('playground', ({ data }) => data.locale === 'ru');
+const items = allItems.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const types = ['experiment', 'vibecoding', 'mini-app', 'component', 'prototype', 'challenge', 'lab-note'] as const;
+const typeLabels: Record<string, string> = {
+  experiment: 'Эксперимент',
+  vibecoding: 'Вайбкодинг',
+  'mini-app': 'Мини-приложение',
+  component: 'Компонент',
+  prototype: 'Прототип',
+  challenge: 'Задача',
+  'lab-note': 'Заметка',
+};
+---
+
+<BaseLayout
+  title="Мастерская"
+  description="Пространство для документирования экспериментов, создания компонентов и фиксации знаний по эко-дизайну веб-сайтов."
+>
+  <div class="container">
+    <header class="page-header">
+      <h1>Мастерская</h1>
+      <p class="subtitle">
+        Открытое пространство для экспериментов, компонентов и лабораторных заметок.
+      </p>
+    </header>
+
+    <nav class="type-filters" aria-label="Фильтр по типу">
+      <button class="filter-btn active" data-filter="all" id="filter-all">Все</button>
+      {types.filter(t => items.some(i => i.data.type === t)).map((type) => (
+        <button class="filter-btn" data-filter={type} id={`filter-${type}`}>
+          {typeLabels[type]}
+        </button>
+      ))}
+    </nav>
+
+    {items.length === 0 ? (
+      <p class="empty-state">Пока ничего — скоро будет!</p>
+    ) : (
+      <ul class="playground-grid" role="list" id="playground-grid">
+        {items.map((item, index) => (
+          <li
+            data-type={item.data.type}
+            class="grid-item"
+            data-reveal
+            style={`--reveal-delay: ${index * 50}ms`}
+          >
+            <PlaygroundCard item={item} />
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</BaseLayout>
+
+<script>
+  function initFilters() {
+    const grid = document.getElementById('playground-grid');
+    if (!grid) return;
+    if (grid.hasAttribute('data-filters')) return;
+    grid.setAttribute('data-filters', '');
+
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.filter ?? 'all';
+        buttons.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const items = grid.querySelectorAll<HTMLLIElement>('.grid-item');
+        items.forEach((item, index) => {
+          const show = filter === 'all' || item.dataset.type === filter;
+          item.style.display = show ? '' : 'none';
+          if (show) {
+            item.classList.remove('filter-pop');
+            item.style.animationDelay = `${Math.min(index * 35, 280)}ms`;
+            void item.offsetWidth;
+            item.classList.add('filter-pop');
+          }
+        });
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initFilters);
+  initFilters();
+</script>
+
+<style>
+  .page-header {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-6);
+  }
+
+  h1 {
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+    letter-spacing: var(--letter-spacing-h1);
+    color: var(--text);
+    margin-bottom: var(--space-2);
+  }
+
+  .subtitle {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    max-width: 620px;
+    line-height: 1.6;
+  }
+
+  .type-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filter-btn {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease),
+      color var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease),
+      transform var(--duration-fast) var(--ease);
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .playground-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-8);
+    padding-bottom: var(--space-16);
+  }
+
+  .grid-item {
+    display: flex;
+  }
+
+  .grid-item.filter-pop {
+    animation: filter-pop 350ms var(--ease) both;
+  }
+
+  @keyframes filter-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.94) translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .grid-item.filter-pop {
+      animation: none;
+    }
+  }
+
+  .empty-state {
+    color: var(--text-muted);
+    font-style: italic;
+    padding: var(--space-12) 0;
+  }
+</style>

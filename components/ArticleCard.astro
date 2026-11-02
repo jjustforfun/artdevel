@@ -1,0 +1,122 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getLocalizedPath } from '../lib/i18n';
+import Tag from './Tag.astro';
+import Badge from './Badge.astro';
+
+interface Props {
+  article: CollectionEntry<'blog'>;
+}
+
+const { article } = Astro.props;
+const { data } = article;
+
+const detailPath = getLocalizedPath('blog', data.locale) + data.slug;
+const formattedDate = new Date(data.datePublished).toLocaleDateString(data.locale, {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+<article class="article-card" data-glow>
+  <a href={detailPath} class="card-link">
+    <div class="card-meta">
+      <time datetime={new Date(data.datePublished).toISOString()}>{formattedDate}</time>
+      <Badge variant="category">{data.category}</Badge>
+      {data.readingTime && <span class="reading-time">{data.readingTime} min</span>}
+    </div>
+
+    <h2 class="card-title">
+      {data.title}
+      <span class="card-arrow" aria-hidden="true">→</span>
+    </h2>
+    <p class="card-excerpt">{data.excerpt}</p>
+
+    {data.tags && data.tags.length > 0 && (
+      <div class="card-tags">
+        {data.tags.map((tag) => (
+          <Tag variant="outline">{tag}</Tag>
+        ))}
+      </div>
+    )}
+  </a>
+</article>
+
+<style>
+  .article-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    height: 100%;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+  }
+
+  .article-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    margin-bottom: var(--space-3);
+  }
+
+  .reading-time {
+    margin-left: auto;
+  }
+
+  .card-title {
+    font-size: var(--text-xl);
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-2);
+    color: var(--color-text);
+  }
+
+  .card-arrow {
+    display: inline-block;
+    margin-left: var(--space-2);
+    color: var(--color-accent);
+    transform: translateX(-6px);
+    opacity: 0;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+  }
+
+  .article-card:hover .card-arrow {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .card-excerpt {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+    margin-bottom: var(--space-4);
+    flex: 1;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: auto;
+  }
+</style>

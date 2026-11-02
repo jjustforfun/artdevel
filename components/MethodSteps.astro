@@ -1,0 +1,85 @@
+---
+export interface MethodStep {
+  title: string;
+  description: string;
+}
+
+interface Props {
+  steps: MethodStep[];
+}
+
+const { steps } = Astro.props;
+---
+
+<ol class="method-steps">
+  {steps.map((step, index) => (
+    <li
+      class="method-step"
+      data-reveal
+      style={`--reveal-delay: ${index * 90}ms`}
+    >
+      <span class="method-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+      <div class="method-content">
+        <h3 class="method-title">{step.title}</h3>
+        <p class="method-description">{step.description}</p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .method-steps {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .method-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .method-step {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    display: flex;
+    gap: var(--space-4);
+    height: 100%;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-normal), border-color var(--transition-normal),
+      box-shadow var(--transition-normal), opacity var(--transition-normal) var(--ease) var(--reveal-delay, 0ms);
+  }
+
+  .method-step:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-md);
+  }
+
+  .method-number {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-accent);
+    background-color: var(--color-accent-light);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    height: fit-content;
+  }
+
+  .method-title {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+  }
+
+  .method-description {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+  }
+</style>
