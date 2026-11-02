@@ -98,10 +98,12 @@
   --focus-ring: 2px solid var(--accent);
 }
 
-/* System dark theme by default (fallback no-JS uniquement : dès que le
-   script anti-FOUC a posé data-theme, les règles [data-theme] prennent le relais) */
+/* Thème piloté par le système : pas de persistance, pas de toggle manuel.
+   En JS : <html data-theme="light|dark"> est posé au chargement et suit
+   matchMedia('(prefers-color-scheme: dark)').change en direct.
+   En no-JS : fallback CSS ci-dessous ( :root:not([data-theme]) ). */
 @media (prefers-color-scheme: dark) {
-  :root:not(.light):not([data-theme]) {
+  :root:not([data-theme]) {
     --bg: #141618;
     --surface: #1C1F23;
     --surface-hover: #262B30;
@@ -115,21 +117,6 @@
   }
 }
 
-/* Forced dark theme via .dark class on html */
-html.dark {
-  --bg: #141618;
-  --surface: #1C1F23;
-  --surface-hover: #262B30;
-  --text: #E8DFC8;
-  --text-muted: #A8A08F;
-  --border: #2A2D31;
-  --accent: #60A5FA;
-  --cta: #F97316;
-  --cta-contrast: #141618;
-  --success: #4ADE80;
-}
-
-/* Keep compatibility with existing data-theme="dark" scripts */
 [data-theme="dark"] {
   --bg: #141618;
   --surface: #1C1F23;
@@ -156,10 +143,7 @@ html.dark {
   --success: #16A34A;
 }
 
-/* ---- Transition de thème fluide ---- */
-
-/* Fallback (pas de View Transitions API) : on anime globalement
-   les propriétés de couleur pendant le changement de thème. */
+/* ---- Transition douce quand le système change de thème ---- */
 html.theme-changing,
 html.theme-changing *,
 html.theme-changing *::before,
@@ -170,35 +154,6 @@ html.theme-changing *::after {
     border-color var(--duration-normal) var(--ease),
     fill var(--duration-normal) var(--ease),
     stroke var(--duration-normal) var(--ease) !important;
-}
-
-/* Reveal circulaire depuis le bouton thème (View Transitions API) */
-html.theme-reveal::view-transition-old(root) {
-  animation: none;
-  z-index: 1;
-  mix-blend-mode: normal;
-}
-
-html.theme-reveal::view-transition-new(root) {
-  z-index: 2;
-  mix-blend-mode: normal;
-  animation: theme-reveal-in 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes theme-reveal-in {
-  from {
-    clip-path: circle(0 at var(--theme-reveal-x, 50%) var(--theme-reveal-y, 50%));
-  }
-  to {
-    clip-path: circle(var(--theme-reveal-r, 100%) at var(--theme-reveal-x, 50%) var(--theme-reveal-y, 50%));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html.theme-reveal::view-transition-old(root),
-  html.theme-reveal::view-transition-new(root) {
-    animation: none;
-  }
 }
 
 /* Base Resets & Global Styles */

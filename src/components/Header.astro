@@ -67,12 +67,6 @@ const t = useTranslations(currentLocale);
         })}
       </div>
 
-      <!-- Bascule Thème Clair / Sombre -->
-      <button id="theme-toggle" class="theme-toggle" type="button" aria-label={t('theme.toggle')}>
-        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-      </button>
-
       <!-- Menu hamburger (mobile) -->
       <button
         id="nav-toggle"
@@ -91,77 +85,7 @@ const t = useTranslations(currentLocale);
 </header>
 
 <script>
-  function getPreferredTheme() {
-    try {
-      const saved = localStorage.getItem('theme');
-      if (saved) return saved;
-    } catch {}
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-
-  function setTheme(theme: string) {
-    document.documentElement.setAttribute('data-theme', theme);
-    try {
-      localStorage.setItem('theme', theme);
-    } catch {}
-  }
-
-  // Applique le thème avec une transition fluide :
-  // reveal circulaire depuis le bouton (View Transitions API),
-  // sinon transition globale de couleur en fallback.
-  function applyTheme(theme: string, origin: HTMLElement) {
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const startViewTransition = (document as Document & { startViewTransition?: (cb: () => void) => { finished: Promise<void> } }).startViewTransition;
-
-    if (reduceMotion || typeof startViewTransition !== 'function') {
-      document.documentElement.classList.add('theme-changing');
-      setTheme(theme);
-      if (!reduceMotion) {
-        window.setTimeout(() => document.documentElement.classList.remove('theme-changing'), 420);
-      } else {
-        document.documentElement.classList.remove('theme-changing');
-      }
-      return;
-    }
-
-    const rect = origin.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const maxR = Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy));
-    const root = document.documentElement;
-    root.style.setProperty('--theme-reveal-x', `${cx}px`);
-    root.style.setProperty('--theme-reveal-y', `${cy}px`);
-    root.style.setProperty('--theme-reveal-r', `${maxR}px`);
-    root.classList.add('theme-reveal');
-
-    try {
-      const vt = startViewTransition(() => setTheme(theme));
-      vt?.finished?.finally(() => {
-        root.classList.remove('theme-reveal');
-        root.style.removeProperty('--theme-reveal-x');
-        root.style.removeProperty('--theme-reveal-y');
-        root.style.removeProperty('--theme-reveal-r');
-      });
-    } catch {
-      // Transition déjà active (ex. navigation) : on bascule en transition de couleur douce
-      root.classList.remove('theme-reveal');
-      root.classList.add('theme-changing');
-      setTheme(theme);
-      window.setTimeout(() => root.classList.remove('theme-changing'), 420);
-    }
-  }
-
   function initHeader() {
-    // Theme toggle
-    const toggleBtn = document.getElementById('theme-toggle');
-    toggleBtn?.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme') || getPreferredTheme();
-      const next = current === 'dark' ? 'light' : 'dark';
-      applyTheme(next, toggleBtn);
-      toggleBtn.classList.remove('theme-switching');
-      void toggleBtn.offsetWidth;
-      toggleBtn.classList.add('theme-switching');
-    });
 
     // Mobile nav toggle
     const navToggle = document.getElementById('nav-toggle');
@@ -406,61 +330,6 @@ const t = useTranslations(currentLocale);
     color: var(--color-text);
     font-weight: bold;
     background-color: var(--color-surface-hover);
-  }
-
-  .theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 40px;
-    min-height: 40px;
-    background: none;
-    border: 1px solid var(--color-border);
-    color: var(--color-text);
-    padding: var(--space-2);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    line-height: 0;
-    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
-  }
-
-  .theme-toggle:hover {
-    background-color: var(--color-surface-hover);
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-    transform: translateY(-1px);
-  }
-
-  .theme-toggle.theme-switching svg {
-    animation: theme-pop 350ms var(--ease);
-  }
-
-  @keyframes theme-pop {
-    from {
-      transform: rotate(-90deg) scale(0.5);
-      opacity: 0;
-    }
-    to {
-      transform: rotate(0deg) scale(1);
-      opacity: 1;
-    }
-  }
-
-  .theme-toggle svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .icon-moon {
-    display: none;
-  }
-
-  html[data-theme="dark"] .icon-sun {
-    display: none;
-  }
-
-  html[data-theme="dark"] .icon-moon {
-    display: block;
   }
 
   .lang-selector-mobile {
